@@ -202,6 +202,16 @@ public class Shader {
         glUniform1i(variableLocation, slot);
     }
 
+    public void uploadIntArray(String variableName, int[] arr) {
+        if (!isBeingUsed) {
+            //throw new IllegalStateException("Shader is not being used but a Texture should be uploaded");
+            use();
+        }
+
+        int variableLocation = glGetUniformLocation(programId, variableName);
+        glUniform1iv(variableLocation, arr);
+    }
+
     public String getFilePath() {
         return filePath;
     }

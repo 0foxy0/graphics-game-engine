@@ -32,7 +32,8 @@ public class Renderer {
         boolean added = false;
 
         for (RenderBatch batch : batches) {
-            if (batch.isFull()) {
+            boolean cantAddSpriteRenderer = !batch.hasSpriteRenderersRoom() || (spriteRenderer.getTexture() != null && !batch.hasTextureRoom() && !batch.hasTexture(spriteRenderer.getTexture()));
+            if (cantAddSpriteRenderer) {
                 continue;
             }
 

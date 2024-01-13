@@ -3,8 +3,6 @@ package engine.utils;
 public enum ShaderPreset {
     TWOD("2d"),
     THREED("3d"),
-    TEXTURE_2D("texture_2d"),
-    TEXTURE_3D("texture_3d"),
     DEFAULT(TWOD);
 
     private final String fileName;
