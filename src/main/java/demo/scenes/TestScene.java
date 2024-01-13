@@ -4,18 +4,22 @@ import engine.GameObject;
 import engine.Scene;
 import engine.Transform;
 import engine.components.SpriteRenderer;
-import engine.renderer.Renderer;
-import engine.renderer.Shader;
-import engine.utils.ShaderPreset;
+import engine.components.SpriteSheet;
+import engine.renderer.Texture;
+import engine.utils.AssetCollector;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 
-public class MessAroundScene extends Scene {
+public class TestScene extends Scene {
     @Override
     public void start() {
-        renderer = new Renderer(new Shader(ShaderPreset.TWOD));
+        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/demo/assets/spritesheet.png", true);
+        SpriteSheet spriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 15, 0);
 
-        int xOffset = 10, yOffset = 10;
+        GameObject gameObject = new GameObject("logo", new Transform(new Vector2f(), new Vector2f(200, 200)));
+        gameObject.addComponent(new SpriteRenderer(spriteSheet.getSprite(0)));
+        addGameObjectToScene(gameObject);
+
+        /*int xOffset = 10, yOffset = 10;
         float totalWidth = (float)(600 - xOffset * 2);
         float totalHeight = (float)(300 - yOffset * 2);
         float sizeX = totalWidth / 100f;
@@ -30,7 +34,7 @@ public class MessAroundScene extends Scene {
                 gameObject.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
                 addGameObjectToScene(gameObject);
             }
-        }
+        }*/
     }
 
     @Override

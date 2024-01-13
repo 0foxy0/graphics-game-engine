@@ -12,6 +12,7 @@ import static org.lwjgl.stb.STBImage.*;
 public class Texture {
     private final String filePath;
     private int textureId;
+    private int width, height;
 
     public Texture(String filePath, boolean pixelate) {
         this.filePath = filePath;
@@ -32,7 +33,6 @@ public class Texture {
         IntBuffer channels = BufferUtils.createIntBuffer(1);
 
         stbi_set_flip_vertically_on_load(true);
-
         ByteBuffer image = stbi_load(filePath, width, height, channels, 0);
 
         if (image == null) {
@@ -42,6 +42,9 @@ public class Texture {
         if (!Arrays.asList(3, 4).contains(channels.get(0))) {
             throw new IllegalArgumentException("Unknown number of channels: " + channels.get(0));
         }
+
+        this.width = width.get(0);
+        this.height = height.get(0);
 
         int rgbOrRgba = channels.get(0) == 4 ? GL_RGBA : GL_RGB;
 
@@ -59,5 +62,13 @@ public class Texture {
 
     public String getFilePath() {
         return filePath;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

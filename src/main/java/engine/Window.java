@@ -108,7 +108,7 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT);
 
             if (deltaTime >= 0.0) {
-                //System.out.println((1.0 / deltaTime) + "FPS");
+                //System.out.println((1.0 / deltaTime) + " FPS");
                 currentScene.update(deltaTime);
             }
 
