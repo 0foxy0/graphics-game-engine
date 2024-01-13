@@ -1,9 +1,11 @@
 package engine.utils;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 public class Time {
-    public static long timeStarted = System.nanoTime();
+    public static double timeStarted = glfwGetTime();
 
     public static double getTimeInSeconds() {
-        return (System.nanoTime() - timeStarted) * 1e-9;
+        return glfwGetTime() - timeStarted;
     }
 }
