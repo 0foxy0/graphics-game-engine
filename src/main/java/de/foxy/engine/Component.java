@@ -1,4 +1,4 @@
-package engine;
+package de.foxy.engine;
 
 public abstract class Component {
     public GameObject gameObject = null;

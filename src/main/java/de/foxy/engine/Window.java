@@ -1,8 +1,8 @@
-package engine;
+package de.foxy.engine;
 
-import engine.listeners.KeyListener;
-import engine.listeners.MouseListener;
-import engine.utils.Time;
+import de.foxy.engine.listeners.KeyListener;
+import de.foxy.engine.listeners.MouseListener;
+import de.foxy.engine.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 

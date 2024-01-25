@@ -1,9 +1,9 @@
-package engine.renderer;
+package de.foxy.engine.renderer;
 
-import engine.GameObject;
-import engine.components.SpriteRenderer;
-import engine.utils.AssetCollector;
-import engine.utils.ShaderPreset;
+import de.foxy.engine.GameObject;
+import de.foxy.engine.components.SpriteRenderer;
+import de.foxy.engine.utils.AssetCollector;
+import de.foxy.engine.utils.ShaderPreset;
 
 import java.util.ArrayList;
 import java.util.Collections;

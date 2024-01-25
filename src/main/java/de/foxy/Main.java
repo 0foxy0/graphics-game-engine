@@ -1,5 +1,7 @@
-import demo.scenes.TestScene;
-import engine.Window;
+package de.foxy;
+
+import de.foxy.demo.scenes.TestScene;
+import de.foxy.engine.Window;
 
 public class Main {
     public static void main(String[] args) {

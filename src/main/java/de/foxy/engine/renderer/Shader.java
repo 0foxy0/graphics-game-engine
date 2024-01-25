@@ -1,6 +1,6 @@
-package engine.renderer;
+package de.foxy.engine.renderer;
 
-import engine.utils.ShaderPreset;
+import de.foxy.engine.utils.ShaderPreset;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 

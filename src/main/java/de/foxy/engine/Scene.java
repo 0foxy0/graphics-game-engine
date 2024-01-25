@@ -1,6 +1,6 @@
-package engine;
+package de.foxy.engine;
 
-import engine.renderer.Renderer;
+import de.foxy.engine.renderer.Renderer;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;

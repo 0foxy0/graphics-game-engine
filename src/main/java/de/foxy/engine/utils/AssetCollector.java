@@ -1,8 +1,8 @@
-package engine.utils;
+package de.foxy.engine.utils;
 
-import engine.components.SpriteSheet;
-import engine.renderer.Shader;
-import engine.renderer.Texture;
+import de.foxy.engine.components.SpriteSheet;
+import de.foxy.engine.renderer.Shader;
+import de.foxy.engine.renderer.Texture;
 
 import java.io.File;
 import java.util.HashMap;

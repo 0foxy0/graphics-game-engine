@@ -1,8 +1,8 @@
-package demo.scenes;
+package de.foxy.demo.scenes;
 
-import engine.Scene;
-import engine.Window;
-import engine.listeners.KeyListener;
+import de.foxy.engine.Scene;
+import de.foxy.engine.Window;
+import de.foxy.engine.listeners.KeyListener;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 

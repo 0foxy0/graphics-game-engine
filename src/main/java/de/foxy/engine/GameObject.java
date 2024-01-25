@@ -1,4 +1,4 @@
-package engine;
+package de.foxy.engine;
 
 import java.util.ArrayList;
 

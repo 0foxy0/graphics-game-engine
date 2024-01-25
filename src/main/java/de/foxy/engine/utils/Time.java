@@ -1,4 +1,4 @@
-package engine.utils;
+package de.foxy.engine.utils;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 

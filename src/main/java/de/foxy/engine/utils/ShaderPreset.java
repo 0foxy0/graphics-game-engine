@@ -1,4 +1,6 @@
-package engine.utils;
+package de.foxy.engine.utils;
+
+import java.io.File;
 
 public enum ShaderPreset {
     TWOD("2d"),
@@ -19,6 +21,6 @@ public enum ShaderPreset {
     }
 
     public String getAbsolutePath() {
-        return "src/main/java/engine/assets/shaders/"+ fileName +".glsl";
+        return new File("src/main/java/de/foxy/engine/assets/shaders/"+ fileName +".glsl").getAbsolutePath();
     }
 }

@@ -1,4 +1,4 @@
-package engine.renderer;
+package de.foxy.engine.renderer;
 
 import org.lwjgl.BufferUtils;
 

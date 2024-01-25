@@ -1,18 +1,18 @@
-package demo.scenes;
+package de.foxy.demo.scenes;
 
-import engine.GameObject;
-import engine.Scene;
-import engine.Transform;
-import engine.components.SpriteRenderer;
-import engine.components.SpriteSheet;
-import engine.renderer.Texture;
-import engine.utils.AssetCollector;
+import de.foxy.engine.GameObject;
+import de.foxy.engine.Scene;
+import de.foxy.engine.Transform;
+import de.foxy.engine.components.SpriteRenderer;
+import de.foxy.engine.components.SpriteSheet;
+import de.foxy.engine.renderer.Texture;
+import de.foxy.engine.utils.AssetCollector;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class TestScene extends Scene {
     private GameObject mario;
-    private final String spriteSheetFilePath = "src/main/java/demo/assets/spritesheet.png";
+    private final String spriteSheetFilePath = "src/main/java/de/foxy/demo/assets/spritesheet.png";
     private int currentSpriteIndex = 0;
     private double timeToWait = 0.5;
 

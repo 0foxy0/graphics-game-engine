@@ -1,6 +1,6 @@
-package engine.components;
+package de.foxy.engine.components;
 
-import engine.renderer.Texture;
+import de.foxy.engine.renderer.Texture;
 import org.joml.Vector2f;
 
 public class Sprite {
