@@ -10,7 +10,7 @@ public class SpriteRenderer extends Component {
     private Vector4f color;
     private Sprite sprite = new Sprite(null);
     private Transform lastTransform;
-    private boolean hasChanged = false;
+    private boolean hasChanged = true;
 
     public SpriteRenderer(Vector4f color) {
         this.color = color;

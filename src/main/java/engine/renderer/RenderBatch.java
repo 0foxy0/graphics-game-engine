@@ -36,8 +36,6 @@ public class RenderBatch {
     private ArrayList<Texture> textures = new ArrayList<>();
     private int[] textureSlots = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
 
-    private boolean initialUpdate = true;
-
     public RenderBatch(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
         this.spriteRenderers = new SpriteRenderer[maxBatchSize];
@@ -85,7 +83,7 @@ public class RenderBatch {
     }
 
     public void render() {
-        boolean rebufferData = initialUpdate;
+        boolean rebufferData = false;
 
         for (int i = 0; i < numOfSpriteRenderers; i++) {
             SpriteRenderer spriteRenderer = spriteRenderers[i];
@@ -128,10 +126,6 @@ public class RenderBatch {
             texture.unbind();
         }
         shader.detach();
-
-        if (initialUpdate) {
-            initialUpdate = false;
-        }
     }
 
     public void addSpriteRenderer(SpriteRenderer spriteRenderer) {
