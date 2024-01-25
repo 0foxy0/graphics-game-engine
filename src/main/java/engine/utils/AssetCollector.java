@@ -40,18 +40,22 @@ public class AssetCollector {
     }
 
     public static void addSpriteSheet(SpriteSheet spriteSheet) {
-        if (spriteSheets.containsKey(spriteSheet.getUUID())) {
+        String absolutePath = new File(spriteSheet.getFilePath()).getAbsolutePath();
+
+        if (spriteSheets.containsKey(absolutePath)) {
             return;
         }
 
-        spriteSheets.put(spriteSheet.getUUID(), spriteSheet);
+        spriteSheets.put(absolutePath, spriteSheet);
     }
 
-    public static SpriteSheet getSpriteSheet(String spriteSheetId) {
-        if (!spriteSheets.containsKey(spriteSheetId)) {
-            throw new AssertionError("No SpriteSheet with ID: "+ spriteSheetId +" stored");
+    public static SpriteSheet getSpriteSheet(String spriteSheetFilePath) {
+        String absolutePath = new File(spriteSheetFilePath).getAbsolutePath();
+
+        if (!spriteSheets.containsKey(absolutePath)) {
+            throw new AssertionError("No SpriteSheet found: "+ absolutePath);
         }
 
-        return spriteSheets.get(spriteSheetId);
+        return spriteSheets.get(absolutePath);
     }
 }

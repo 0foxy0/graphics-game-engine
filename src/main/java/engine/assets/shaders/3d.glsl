@@ -1,3 +1,7 @@
+// a = attribute | exmpl: aPos = postition attribute
+// f = fragment | exmpl: fColor = color fragment
+// u = uniform | exmpl: uView = view uniform
+
 #type vertex
 #version 460 core
 

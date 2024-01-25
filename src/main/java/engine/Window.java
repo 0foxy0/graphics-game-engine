@@ -37,6 +37,8 @@ public class Window {
     }
 
     public static void changeScene(Scene newScene) {
+        currentScene.isChangingScene = true;
+
         KeyListener.resetKeyInputs();
         MouseListener.resetMouseButtonInputs();
 

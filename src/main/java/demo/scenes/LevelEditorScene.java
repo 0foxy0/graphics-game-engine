@@ -22,7 +22,6 @@ public class LevelEditorScene extends Scene {
         }
 
         if (!isChangingScene && KeyListener.isKeyDown(GLFW_KEY_TAB)) {
-            isChangingScene = true;
             Window.changeScene(new LevelScene());
         }
     }
