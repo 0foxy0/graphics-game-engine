@@ -36,6 +36,8 @@ public class RenderBatch {
     private ArrayList<Texture> textures = new ArrayList<>();
     private int[] textureSlots = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
 
+    private boolean initialUpdate = true;
+
     public RenderBatch(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
         this.spriteRenderers = new SpriteRenderer[maxBatchSize];
@@ -83,8 +85,23 @@ public class RenderBatch {
     }
 
     public void render() {
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebufferData = initialUpdate;
+
+        for (int i = 0; i < numOfSpriteRenderers; i++) {
+            SpriteRenderer spriteRenderer = spriteRenderers[i];
+            if (!spriteRenderer.hasChanged()) {
+                continue;
+            }
+
+            loadVertexProperties(i);
+            spriteRenderer.changeAcknowledged();
+            rebufferData = true;
+        }
+
+        if (rebufferData) {
+            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         shader.use();
 
@@ -111,6 +128,10 @@ public class RenderBatch {
             texture.unbind();
         }
         shader.detach();
+
+        if (initialUpdate) {
+            initialUpdate = false;
+        }
     }
 
     public void addSpriteRenderer(SpriteRenderer spriteRenderer) {

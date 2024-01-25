@@ -4,15 +4,15 @@ import engine.renderer.Texture;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class SpriteSheet {
-    private UUID uuid = UUID.randomUUID();
     private Texture texture;
     private ArrayList<Sprite> sprites = new ArrayList<>();
+    private int numOfSprites;
 
     public SpriteSheet(Texture texture, int spriteWidth, int spriteHeight, int numOfSprites, int spacing) {
         this.texture = texture;
+        this.numOfSprites = numOfSprites;
 
         int currentX = 0;
         int currentY = texture.getHeight() - spriteHeight;
@@ -45,7 +45,11 @@ public class SpriteSheet {
         return sprites.get(index);
     }
 
-    public String getUUID() {
-        return uuid.toString();
+    public String getFilePath() {
+        return texture.getFilePath();
+    }
+
+    public int getNumOfSprites() {
+        return numOfSprites;
     }
 }

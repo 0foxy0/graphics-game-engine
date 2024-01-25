@@ -10,14 +10,20 @@ import engine.utils.AssetCollector;
 import org.joml.Vector2f;
 
 public class TestScene extends Scene {
+    private GameObject mario;
+    private final String spriteSheetFilePath = "src/main/java/demo/assets/spritesheet.png";
+    private int currentSpriteIndex = 0;
+    private double timeToWait = 0.5;
+
     @Override
     public void start() {
-        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/demo/assets/spritesheet.png", true);
-        SpriteSheet spriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 15, 0);
+        Texture spriteSheetTexture = AssetCollector.getTexture(spriteSheetFilePath, true);
+        SpriteSheet spriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
+        AssetCollector.addSpriteSheet(spriteSheet);
 
-        GameObject gameObject = new GameObject("logo", new Transform(new Vector2f(), new Vector2f(200, 200)));
-        gameObject.addComponent(new SpriteRenderer(spriteSheet.getSprite(0)));
-        addGameObjectToScene(gameObject);
+        mario = new GameObject("mario", new Transform(new Vector2f(), new Vector2f(200, 200)));
+        mario.addComponent(new SpriteRenderer(spriteSheet.getSprite(0)));
+        addGameObjectToScene(mario);
 
         /*int xOffset = 10, yOffset = 10;
         float totalWidth = (float)(600 - xOffset * 2);
@@ -39,6 +45,16 @@ public class TestScene extends Scene {
 
     @Override
     public void update(double deltaTime) {
+        mario.transform.position.x += (float) (10 * deltaTime);
+
+        timeToWait -= deltaTime;
+
+        if (timeToWait <= 0) {
+            SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
+            mario.getComponent(SpriteRenderer.class).setSprite(spriteSheet.getSprite((++currentSpriteIndex) % spriteSheet.getNumOfSprites()));
+            timeToWait = 0.5;
+        }
+
         for (GameObject go : gameObjects) {
             go.update(deltaTime);
         }
