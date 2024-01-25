@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch> {
     // Sizes
     private final int POSITION_SIZE = 2, COLOR_SIZE = 4, TEXTURE_COORDS_SIZE = 2, TEXTURE_ID_SIZE = 1;
     private final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + TEXTURE_COORDS_SIZE + TEXTURE_ID_SIZE;
@@ -32,12 +32,14 @@ public class RenderBatch {
 
     private int vaoId, vboId;
     private int maxBatchSize;
+    private int zIndex;
     private Shader shader;
     private ArrayList<Texture> textures = new ArrayList<>();
     private int[] textureSlots = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
         this.maxBatchSize = maxBatchSize;
+        this.zIndex = zIndex;
         this.spriteRenderers = new SpriteRenderer[maxBatchSize];
 
         this.vertices = new float[maxBatchSize * VERTICES_PER_QUAD * VERTEX_SIZE];
@@ -46,8 +48,9 @@ public class RenderBatch {
         this.shader.compileAndLink();
     }
 
-    public RenderBatch(int maxBatchSize, Shader shader) {
+    public RenderBatch(int maxBatchSize, Shader shader, int zIndex) {
         this.maxBatchSize = maxBatchSize;
+        this.zIndex = zIndex;
         this.spriteRenderers = new SpriteRenderer[maxBatchSize];
 
         this.vertices = new float[maxBatchSize * VERTICES_PER_QUAD * VERTEX_SIZE];
@@ -242,5 +245,14 @@ public class RenderBatch {
 
     public boolean hasTexture(Texture texture) {
         return textures.contains(texture);
+    }
+
+    public int getZIndex() {
+        return zIndex;
+    }
+
+    @Override
+    public int compareTo(RenderBatch o) {
+        return Integer.compare(zIndex, o.getZIndex());
     }
 }

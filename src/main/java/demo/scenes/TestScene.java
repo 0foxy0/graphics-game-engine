@@ -8,6 +8,7 @@ import engine.components.SpriteSheet;
 import engine.renderer.Texture;
 import engine.utils.AssetCollector;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class TestScene extends Scene {
     private GameObject mario;
@@ -21,7 +22,7 @@ public class TestScene extends Scene {
         SpriteSheet spriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
         AssetCollector.addSpriteSheet(spriteSheet);
 
-        mario = new GameObject("mario", new Transform(new Vector2f(), new Vector2f(200, 200)));
+        mario = new GameObject("mario", new Transform(new Vector3f(), new Vector2f(200, 200)));
         mario.addComponent(new SpriteRenderer(spriteSheet.getSprite(0)));
         addGameObjectToScene(mario);
 

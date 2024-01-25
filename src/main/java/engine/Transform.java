@@ -1,28 +1,49 @@
 package engine;
 
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class Transform {
-    public Vector2f position;
-    public Vector2f scale;
+    public Vector3f position;
+    public Vector3f scale;
 
     public Transform() {
-        position = new Vector2f();
-        scale = new Vector2f();
+        position = new Vector3f();
+        scale = new Vector3f();
     }
 
     public Transform(Vector2f position) {
-        this.position = position;
-        this.scale = new Vector2f();
+        this.position = new Vector3f(position, 0);
+        this.scale = new Vector3f();
     }
 
-    public Transform(Vector2f position, Vector2f scale) {
+    public Transform(Vector3f position) {
+        this.position = position;
+        this.scale = new Vector3f();
+    }
+
+    public Transform(Vector3f position, Vector3f scale) {
         this.position = position;
         this.scale = scale;
     }
 
+    public Transform(Vector2f position, Vector2f scale) {
+        this.position = new Vector3f(position, 0);
+        this.scale = new Vector3f(scale, 0);;
+    }
+
+    public Transform(Vector3f position, Vector2f scale) {
+        this.position = position;
+        this.scale = new Vector3f(scale, 0);
+    }
+
+    public Transform(Vector2f position, Vector3f scale) {
+        this.position = new Vector3f(position, 0);;
+        this.scale = scale;
+    }
+
     public Transform copy() {
-        return new Transform(new Vector2f(position), new Vector2f(scale));
+        return new Transform(new Vector3f(position), new Vector3f(scale));
     }
 
     public void copy(Transform to) {
