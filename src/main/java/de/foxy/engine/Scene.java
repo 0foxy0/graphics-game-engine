@@ -1,6 +1,10 @@
 package de.foxy.engine;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.foxy.engine.renderer.Renderer;
+import de.foxy.engine.utils.typeAdapter.ComponentTypeAdapter;
+import de.foxy.engine.utils.typeAdapter.GameObjectTypeAdapter;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -11,6 +15,7 @@ public abstract class Scene {
     private boolean isRunning = false;
     protected ArrayList<GameObject> gameObjects = new ArrayList<>();
     protected Renderer renderer = new Renderer();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Component.class, new ComponentTypeAdapter()).registerTypeAdapter(GameObject.class, new GameObjectTypeAdapter()).create();
 
     public abstract void start();
 
@@ -30,6 +35,8 @@ public abstract class Scene {
 
     public void imGui() {}
 
+    public abstract void end();
+
     public void addGameObjectToScene(GameObject gameObject) {
         if (!isRunning) {
             gameObjects.add(gameObject);
@@ -47,5 +54,9 @@ public abstract class Scene {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }

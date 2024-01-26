@@ -1,5 +1,6 @@
 package de.foxy.demo.scenes;
 
+import com.google.gson.Gson;
 import de.foxy.engine.GameObject;
 import de.foxy.engine.Scene;
 import de.foxy.engine.Transform;
@@ -13,41 +14,26 @@ import org.joml.Vector3f;
 
 public class TestScene extends Scene {
     private GameObject mario;
-    private final String spriteSheetFilePath = "src/main/java/de/foxy/demo/assets/spritesheet.png";
+    private SpriteSheet marioSpriteSheet;
     private int[] spriteIndex = {0};
 
     @Override
     public void start() {
-        Texture spriteSheetTexture = AssetCollector.getTexture(spriteSheetFilePath, true);
-        SpriteSheet spriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
-        AssetCollector.addSpriteSheet(spriteSheet);
+        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/de/foxy/demo/assets/spritesheet.png", true);
+        marioSpriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
 
-        mario = new GameObject("mario", new Transform(new Vector3f(), new Vector2f(200, 200)));
-        mario.addComponent(new SpriteRenderer(spriteSheet.getSprite(0)));
+        mario = new GameObject("Mario", new Transform(new Vector3f(), new Vector2f(200, 200)));
+        mario.addComponent(new SpriteRenderer(marioSpriteSheet.getSprite(spriteIndex[0])));
         addGameObjectToScene(mario);
 
-        /*int xOffset = 10, yOffset = 10;
-        float totalWidth = (float)(600 - xOffset * 2);
-        float totalHeight = (float)(300 - yOffset * 2);
-        float sizeX = totalWidth / 100f;
-        float sizeY = totalHeight / 100f;
-
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                float xPos = xOffset + (x * sizeX);
-                float yPos = yOffset + (y * sizeY);
-
-                GameObject gameObject = new GameObject(x + "" + y, new Transform(new Vector2f(xPos, yPos), new Vector2f(sizeX, sizeY)));
-                gameObject.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
-                addGameObjectToScene(gameObject);
-            }
-        }*/
+        Gson gson = getGson();
+        String serialized = gson.toJson(mario);
+        GameObject deserialized = gson.fromJson(serialized, GameObject.class);
     }
 
     @Override
     public void update(double deltaTime) {
-        SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
-        mario.getComponent(SpriteRenderer.class).setSprite(spriteSheet.getSprite(spriteIndex[0]));
+        mario.getComponent(SpriteRenderer.class).setSprite(marioSpriteSheet.getSprite(spriteIndex[0]));
 
         for (GameObject go : gameObjects) {
             go.update(deltaTime);
@@ -58,14 +44,15 @@ public class TestScene extends Scene {
 
     @Override
     public void imGui() {
-        SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
-
         //ImGui.showDemoWindow();
         ImGui.begin("Sprite Picker");
 
         ImGui.pushItemWidth(ImGui.getFontSize() * 10);
-        ImGui.sliderInt(" ", spriteIndex, 0, spriteSheet.getNumOfSprites() - 1);
+        ImGui.sliderInt(" ", spriteIndex, 0, marioSpriteSheet.getNumOfSprites() - 1);
 
         ImGui.end();
     }
+
+    @Override
+    public void end() {}
 }

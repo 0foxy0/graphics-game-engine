@@ -138,6 +138,8 @@ public class Window {
             deltaTime = endTime - beginTime;
             beginTime = endTime;
         }
+
+        currentScene.end();
     }
 
     public static Scene getCurrentScene() {

@@ -25,4 +25,7 @@ public class LevelScene extends Scene {
             Window.changeScene(new LevelEditorScene());
         }
     }
+
+    @Override
+    public void end() {}
 }

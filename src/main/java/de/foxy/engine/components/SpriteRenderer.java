@@ -9,8 +9,8 @@ import org.joml.Vector4f;
 public class SpriteRenderer extends Component {
     private Vector4f color;
     private Sprite sprite = new Sprite(null);
-    private Transform lastTransform;
-    private boolean hasChanged = true;
+    private transient Transform lastTransform;
+    private transient boolean hasChanged = true;
 
     public SpriteRenderer(Vector4f color) {
         this.color = color;
