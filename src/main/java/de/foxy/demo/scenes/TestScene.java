@@ -7,14 +7,14 @@ import de.foxy.engine.components.SpriteRenderer;
 import de.foxy.engine.components.SpriteSheet;
 import de.foxy.engine.renderer.Texture;
 import de.foxy.engine.utils.AssetCollector;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class TestScene extends Scene {
     private GameObject mario;
     private final String spriteSheetFilePath = "src/main/java/de/foxy/demo/assets/spritesheet.png";
-    private int currentSpriteIndex = 0;
-    private double timeToWait = 0.5;
+    private int[] spriteIndex = {0};
 
     @Override
     public void start() {
@@ -46,20 +46,26 @@ public class TestScene extends Scene {
 
     @Override
     public void update(double deltaTime) {
-        mario.transform.position.x += (float) (10 * deltaTime);
-
-        timeToWait -= deltaTime;
-
-        if (timeToWait <= 0) {
-            SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
-            mario.getComponent(SpriteRenderer.class).setSprite(spriteSheet.getSprite((++currentSpriteIndex) % spriteSheet.getNumOfSprites()));
-            timeToWait = 0.5;
-        }
+        SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
+        mario.getComponent(SpriteRenderer.class).setSprite(spriteSheet.getSprite(spriteIndex[0]));
 
         for (GameObject go : gameObjects) {
             go.update(deltaTime);
         }
 
         renderer.render();
+    }
+
+    @Override
+    public void imGui() {
+        SpriteSheet spriteSheet = AssetCollector.getSpriteSheet(spriteSheetFilePath);
+
+        //ImGui.showDemoWindow();
+        ImGui.begin("Sprite Picker");
+
+        ImGui.pushItemWidth(ImGui.getFontSize() * 10);
+        ImGui.sliderInt(" ", spriteIndex, 0, spriteSheet.getNumOfSprites() - 1);
+
+        ImGui.end();
     }
 }

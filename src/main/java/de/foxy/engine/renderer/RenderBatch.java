@@ -20,8 +20,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + TEXTURE_COORDS_SIZE + TEXTURE_ID_SIZE;
     private final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * Float.BYTES;
     // Offsets
-    private final int POSITION_OFFSET = 0, COLOR_OFFSET = POSITION_OFFSET + POSITION_SIZE * Float.BYTES;
-    private final int TEXTURE_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES, TEXTURE_ID_OFFSET = TEXTURE_COORDS_OFFSET + TEXTURE_COORDS_SIZE * Float.BYTES;
+    private final int POSITION_OFFSET = 0;
+    private final int COLOR_OFFSET = POSITION_SIZE * Float.BYTES;
+    private final int TEXTURE_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
+    private final int TEXTURE_ID_OFFSET = TEXTURE_COORDS_OFFSET + TEXTURE_COORDS_SIZE * Float.BYTES;
     // 6 indices per quad/rectangle; 3 indices per triangle
     private final int VERTICES_PER_QUAD = 4, INDICES_PER_QUAD = 6;
 

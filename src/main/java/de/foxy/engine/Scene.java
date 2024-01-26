@@ -28,6 +28,8 @@ public abstract class Scene {
 
     public abstract void update(double deltaTime);
 
+    public void imGui() {}
+
     public void addGameObjectToScene(GameObject gameObject) {
         if (!isRunning) {
             gameObjects.add(gameObject);

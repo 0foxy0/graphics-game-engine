@@ -1,8 +1,8 @@
 package de.foxy.engine;
 
-public abstract class Component {
+public class Component {
     public GameObject gameObject = null;
 
     public void start() {}
-    public abstract void update(double deltaTime);
+    public void update(double deltaTime) {}
 }

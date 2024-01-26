@@ -51,6 +51,10 @@ public class SpriteRenderer extends Component {
     }
 
     public void setSprite(Sprite sprite) {
+        if (this.sprite.equals(sprite)) {
+            return;
+        }
+
         this.sprite = sprite;
         hasChanged = true;
     }

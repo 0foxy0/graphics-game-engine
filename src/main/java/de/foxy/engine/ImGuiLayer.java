@@ -1,13 +1,12 @@
 package de.foxy.engine;
 
+import imgui.ImFontAtlas;
+import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
-import imgui.flag.ImGuiBackendFlags;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiMouseCursor;
+import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 
@@ -29,10 +28,7 @@ public class ImGuiLayer {
 
     public void init() {
         ImGui.createContext();
-
         ImGuiIO io = ImGui.getIO();
-
-        // imGuiIO.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
 
         io.setIniFilename(null);
         io.setWantSaveIniSettings(false);
@@ -42,7 +38,7 @@ public class ImGuiLayer {
         io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors);
         io.setBackendPlatformName("imgui_java_impl_glfw");
 
-        final int[] keyMap = new int[ImGuiKey.COUNT];
+        int[] keyMap = new int[ImGuiKey.COUNT];
         keyMap[ImGuiKey.Tab] = GLFW_KEY_TAB;
         keyMap[ImGuiKey.LeftArrow] = GLFW_KEY_LEFT;
         keyMap[ImGuiKey.RightArrow] = GLFW_KEY_RIGHT;
@@ -77,7 +73,6 @@ public class ImGuiLayer {
         mouseCursors[ImGuiMouseCursor.Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
         mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
-
         glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 io.setKeysDown(key, true);
@@ -98,13 +93,12 @@ public class ImGuiLayer {
         });
 
         glfwSetMouseButtonCallback(glfwWindow, (w, button, action, mods) -> {
-            final boolean[] mouseDown = new boolean[5];
+            boolean[] mouseDown = new boolean[5];
 
-            mouseDown[0] = button == GLFW_MOUSE_BUTTON_1 && action != GLFW_RELEASE;
-            mouseDown[1] = button == GLFW_MOUSE_BUTTON_2 && action != GLFW_RELEASE;
-            mouseDown[2] = button == GLFW_MOUSE_BUTTON_3 && action != GLFW_RELEASE;
-            mouseDown[3] = button == GLFW_MOUSE_BUTTON_4 && action != GLFW_RELEASE;
-            mouseDown[4] = button == GLFW_MOUSE_BUTTON_5 && action != GLFW_RELEASE;
+            for (int i = 0; i < mouseDown.length; i++) {
+                mouseDown[i] = button == i && action != GLFW_RELEASE;
+                // GLFW_MOUSE_BUTTON_1 - GLFW_MOUSE_BUTTON_5
+            }
 
             io.setMouseDown(mouseDown);
 
@@ -133,6 +127,18 @@ public class ImGuiLayer {
             }
         });
 
+        ImFontAtlas fontAtlas = io.getFonts();
+        ImFontConfig fontConfig = new ImFontConfig();
+
+        fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesDefault());
+
+        fontConfig.setPixelSnapH(true);
+        fontAtlas.addFontFromFileTTF("src/main/java/de/foxy/engine/assets/fonts/arial.ttf", 16, fontConfig);
+
+        fontConfig.destroy();
+
+        fontAtlas.addFlags(ImGuiFreeTypeBuilderFlags.LightHinting);
+        fontAtlas.build();
 
         imGuiImplGlfw.init(glfwWindow, false);
         imGuiImplGl3.init(glslVersion);
@@ -142,7 +148,7 @@ public class ImGuiLayer {
         startFrame(deltaTime);
 
         ImGui.newFrame();
-        // ImGui.showDemoWindow();
+        Window.getCurrentScene().imGui();
         ImGui.render();
 
         endFrame();
@@ -165,12 +171,6 @@ public class ImGuiLayer {
     }
 
     private void endFrame() {
-        /*if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupGlfwWindow = glfwGetCurrentContext();
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backupGlfwWindow);
-        }*/
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
     }
 
