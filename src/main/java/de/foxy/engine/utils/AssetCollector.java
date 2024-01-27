@@ -25,6 +25,16 @@ public class AssetCollector {
         return shader;
     }
 
+    public static void removeShader(String shaderFilePath) {
+        File file = new File(shaderFilePath);
+
+        if (!shaders.containsKey(file.getAbsolutePath())) {
+            return;
+        }
+
+        shaders.remove(file.getAbsolutePath());
+    }
+
     public static Texture getTexture(String textureFilePath, boolean pixelate) {
         File file = new File(textureFilePath);
         String mapKey = file.getAbsolutePath() + pixelate;
@@ -37,6 +47,16 @@ public class AssetCollector {
 
         textures.put(mapKey, texture);
         return texture;
+    }
+
+    public static void removeTexture(String textureFilePath) {
+        File file = new File(textureFilePath);
+
+        if (!textures.containsKey(file.getAbsolutePath())) {
+            return;
+        }
+
+        textures.remove(file.getAbsolutePath());
     }
 
     public static void addSpriteSheet(SpriteSheet spriteSheet) {
@@ -57,5 +77,15 @@ public class AssetCollector {
         }
 
         return spriteSheets.get(absolutePath);
+    }
+
+    public static void removeSpriteSheet(String spriteSheetFilePath) {
+        File file = new File(spriteSheetFilePath);
+
+        if (!spriteSheets.containsKey(file.getAbsolutePath())) {
+            return;
+        }
+
+        spriteSheets.remove(file.getAbsolutePath());
     }
 }
