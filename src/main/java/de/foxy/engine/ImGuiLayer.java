@@ -115,6 +115,19 @@ public class ImGuiLayer {
         endFrame();
     }
 
+    public void setIniFilename(String filename) {
+        ImGuiIO io = ImGui.getIO();
+
+        if (filename == null) {
+            io.setIniFilename(null);
+            io.setWantSaveIniSettings(false);
+            return;
+        }
+
+        io.setIniFilename(filename);
+        io.setWantSaveIniSettings(true);
+    }
+
     private void startFrame(double deltaTime) {
         float[] windowSize = {Window.getWidth(), Window.getHeight()};
         double[] mousePosX = {0}, mousePosY = {0};

@@ -19,7 +19,7 @@ public class TestScene extends Scene {
 
     @Override
     public void start() {
-        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/de/foxy/demo/assets/spritesheet.png", true);
+        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/de/foxy/demo/assets/mario_spritesheet.png", true);
         marioSpriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
 
         mario = new GameObject("Mario", new Transform(new Vector3f(), new Vector2f(200, 200)));

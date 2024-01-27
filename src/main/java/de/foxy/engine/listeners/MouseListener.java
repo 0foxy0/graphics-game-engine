@@ -1,7 +1,10 @@
 package de.foxy.engine.listeners;
 
+import de.foxy.engine.Window;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -97,6 +100,27 @@ public class MouseListener {
     }
     public static float getY() {
         return (float) get().posY;
+    }
+
+    public static float getOrthoX() {
+        float currentX = (getX() / (float) Window.getWidth()) * 2f - 1f;
+        Vector4f tmp = new Vector4f(currentX, 0, 0, 1);
+        Matrix4f inverseProjection = Window.getCurrentScene().getCamera().getInverseProjection();
+        Matrix4f inverseView = Window.getCurrentScene().getCamera().getInverseView();
+
+        tmp.mul(inverseProjection).mul(inverseView);
+
+        return tmp.x;
+    }
+    public static float getOrthoY() {
+        float currentY = (getY() / (float) Window.getHeight()) * 2f - 1f;
+        Vector4f tmp = new Vector4f(0, currentY, 0, 1);
+        Matrix4f inverseProjection = Window.getCurrentScene().getCamera().getInverseProjection();
+        Matrix4f inverseView = Window.getCurrentScene().getCamera().getInverseView();
+
+        tmp.mul(inverseProjection).mul(inverseView);
+
+        return tmp.y;
     }
 
     public static float getDeltaX() {
