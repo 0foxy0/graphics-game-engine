@@ -1,10 +1,12 @@
 package de.foxy.engine.listeners;
 
+import imgui.ImGui;
+import imgui.ImGuiIO;
+
 import java.util.HashMap;
 import java.util.Optional;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseListener {
     private static MouseListener instance;
@@ -28,6 +30,34 @@ public class MouseListener {
             instance = new MouseListener();
         }
         return instance;
+    }
+
+    public static void initCallbacks(long glfwWindow) {
+        ImGuiIO io = ImGui.getIO();
+
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, (w, button, action, mods) -> {
+            mouseButtonCallback(w, button, action, mods);
+
+            boolean[] mouseDown = new boolean[5];
+
+            for (int i = 0; i < mouseDown.length; i++) {
+                mouseDown[i] = button == i && action != GLFW_RELEASE;
+                // GLFW_MOUSE_BUTTON_1 - GLFW_MOUSE_BUTTON_5
+            }
+
+            io.setMouseDown(mouseDown);
+
+            if (!io.getWantCaptureMouse() && mouseDown[1]) {
+                ImGui.setWindowFocus(null);
+            }
+        });
+        glfwSetScrollCallback(glfwWindow, (w, xOffset, yOffset) -> {
+            mouseScrollCallback(w, xOffset, yOffset);
+
+            io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
+            io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
+        });
     }
 
     public static void mousePosCallback(long window, double posX, double posY) {

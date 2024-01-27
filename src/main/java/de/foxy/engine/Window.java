@@ -41,6 +41,7 @@ public class Window {
 
     public static void changeScene(Scene newScene) {
         currentScene.isChangingScene = true;
+        currentScene.end();
 
         KeyListener.resetKeyInputs();
         MouseListener.resetMouseButtonInputs();
@@ -87,18 +88,6 @@ public class Window {
             throw new IllegalStateException("Failed to create GLFW window");
         }
 
-        // Callbacks
-        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
-        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
-        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
-
-        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
-
-        glfwSetWindowSizeCallback(glfwWindow, (w, newWidth, newHeight) -> {
-            Window.setWidth(newWidth);
-            Window.setHeight(newHeight);
-        });
-
         glfwMakeContextCurrent(glfwWindow);
         // V-Sync
         glfwSwapInterval(1);
@@ -111,6 +100,14 @@ public class Window {
 
         imGuiLayer = new ImGuiLayer(glfwWindow);
         imGuiLayer.init();
+
+        // Callbacks
+        glfwSetWindowSizeCallback(glfwWindow, (w, newWidth, newHeight) -> {
+            Window.setWidth(newWidth);
+            Window.setHeight(newHeight);
+        });
+        MouseListener.initCallbacks(glfwWindow);
+        KeyListener.initCallbacks(glfwWindow);
 
         currentScene.start();
         currentScene.runs();

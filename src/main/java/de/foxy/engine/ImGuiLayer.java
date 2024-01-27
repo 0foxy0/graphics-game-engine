@@ -73,45 +73,6 @@ public class ImGuiLayer {
         mouseCursors[ImGuiMouseCursor.Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
         mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
-        glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
-            if (action == GLFW_PRESS) {
-                io.setKeysDown(key, true);
-            } else if (action == GLFW_RELEASE) {
-                io.setKeysDown(key, false);
-            }
-
-            io.setKeyCtrl(io.getKeysDown(GLFW_KEY_LEFT_CONTROL) || io.getKeysDown(GLFW_KEY_RIGHT_CONTROL));
-            io.setKeyShift(io.getKeysDown(GLFW_KEY_LEFT_SHIFT) || io.getKeysDown(GLFW_KEY_RIGHT_SHIFT));
-            io.setKeyAlt(io.getKeysDown(GLFW_KEY_LEFT_ALT) || io.getKeysDown(GLFW_KEY_RIGHT_ALT));
-            io.setKeySuper(io.getKeysDown(GLFW_KEY_LEFT_SUPER) || io.getKeysDown(GLFW_KEY_RIGHT_SUPER));
-        });
-
-        glfwSetCharCallback(glfwWindow, (w, c) -> {
-            if (c != GLFW_KEY_DELETE) {
-                io.addInputCharacter(c);
-            }
-        });
-
-        glfwSetMouseButtonCallback(glfwWindow, (w, button, action, mods) -> {
-            boolean[] mouseDown = new boolean[5];
-
-            for (int i = 0; i < mouseDown.length; i++) {
-                mouseDown[i] = button == i && action != GLFW_RELEASE;
-                // GLFW_MOUSE_BUTTON_1 - GLFW_MOUSE_BUTTON_5
-            }
-
-            io.setMouseDown(mouseDown);
-
-            if (!io.getWantCaptureMouse() && mouseDown[1]) {
-                ImGui.setWindowFocus(null);
-            }
-        });
-
-        glfwSetScrollCallback(glfwWindow, (w, xOffset, yOffset) -> {
-            io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
-            io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
-        });
-
         io.setSetClipboardTextFn(new ImStrConsumer() {
             @Override
             public void accept(final String s) {
