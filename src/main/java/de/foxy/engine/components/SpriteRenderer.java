@@ -1,7 +1,6 @@
 package de.foxy.engine.components;
 
-import de.foxy.engine.Component;
-import de.foxy.engine.Transform;
+import de.foxy.engine.utils.Transform;
 import de.foxy.engine.renderer.Texture;
 import org.joml.Vector2f;
 import org.joml.Vector4f;

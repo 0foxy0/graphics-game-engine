@@ -40,8 +40,6 @@ public class MouseListener {
 
         glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(glfwWindow, (w, button, action, mods) -> {
-            mouseButtonCallback(w, button, action, mods);
-
             boolean[] mouseDown = new boolean[5];
 
             for (int i = 0; i < mouseDown.length; i++) {
@@ -54,12 +52,18 @@ public class MouseListener {
             if (!io.getWantCaptureMouse() && mouseDown[1]) {
                 ImGui.setWindowFocus(null);
             }
+
+            if (!io.getWantCaptureMouse()) {
+                mouseButtonCallback(w, button, action, mods);
+            }
         });
         glfwSetScrollCallback(glfwWindow, (w, xOffset, yOffset) -> {
-            mouseScrollCallback(w, xOffset, yOffset);
-
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
+
+            if (!io.getWantCaptureMouse()) {
+                mouseScrollCallback(w, xOffset, yOffset);
+            }
         });
     }
 
@@ -98,6 +102,7 @@ public class MouseListener {
     public static float getX() {
         return (float) get().posX;
     }
+
     public static float getY() {
         return (float) get().posY;
     }
@@ -112,8 +117,10 @@ public class MouseListener {
 
         return tmp.x;
     }
+
     public static float getOrthoY() {
-        float currentY = (getY() / (float) Window.getHeight()) * 2f - 1f;
+        float currentY = Window.getHeight() - getY();
+        currentY = (currentY / (float) Window.getHeight()) * 2f - 1f;
         Vector4f tmp = new Vector4f(0, currentY, 0, 1);
         Matrix4f inverseProjection = Window.getCurrentScene().getCamera().getInverseProjection();
         Matrix4f inverseView = Window.getCurrentScene().getCamera().getInverseView();
@@ -126,6 +133,7 @@ public class MouseListener {
     public static float getDeltaX() {
         return (float) (get().lastX - get().posX);
     }
+
     public static float getDeltaY() {
         return (float) (get().lastY - get().posY);
     }
@@ -133,6 +141,7 @@ public class MouseListener {
     public static float getScrollX() {
         return (float) get().scrollX;
     }
+
     public static float getScrollY() {
         return (float) get().scrollY;
     }

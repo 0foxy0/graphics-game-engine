@@ -2,12 +2,15 @@ package de.foxy.engine;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import de.foxy.engine.components.Component;
 import de.foxy.engine.renderer.Renderer;
 import de.foxy.engine.utils.typeAdapter.ComponentTypeAdapter;
 import de.foxy.engine.utils.typeAdapter.GameObjectTypeAdapter;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class Scene {
     protected boolean isChangingScene = false;
@@ -33,7 +36,7 @@ public abstract class Scene {
 
     public abstract void update(double deltaTime);
 
-    public void imGui() {}
+    public void imGui(double deltaTime) {}
 
     public abstract void end();
 
@@ -54,6 +57,10 @@ public abstract class Scene {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public Optional<GameObject> getGameObjectByName(String name) {
+        return gameObjects.stream().filter(go -> Objects.equals(go.getName(), name)).findFirst();
     }
 
     public Gson getGson() {

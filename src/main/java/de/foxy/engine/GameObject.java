@@ -1,5 +1,8 @@
 package de.foxy.engine;
 
+import de.foxy.engine.components.Component;
+import de.foxy.engine.utils.Transform;
+
 import java.util.ArrayList;
 
 public class GameObject {
@@ -62,5 +65,13 @@ public class GameObject {
     public void addComponent(Component component) {
         components.add(component);
         component.gameObject = this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String toString() {
+        return name + ": " + transform.position + " | " + transform.scale + "\n" + components;
     }
 }

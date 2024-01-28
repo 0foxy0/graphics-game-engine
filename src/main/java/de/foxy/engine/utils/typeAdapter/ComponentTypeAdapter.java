@@ -1,7 +1,7 @@
 package de.foxy.engine.utils.typeAdapter;
 
 import com.google.gson.*;
-import de.foxy.engine.Component;
+import de.foxy.engine.components.Component;
 
 import java.lang.reflect.Type;
 

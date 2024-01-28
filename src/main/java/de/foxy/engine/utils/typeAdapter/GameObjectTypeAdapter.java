@@ -1,9 +1,9 @@
 package de.foxy.engine.utils.typeAdapter;
 
 import com.google.gson.*;
-import de.foxy.engine.Component;
+import de.foxy.engine.components.Component;
 import de.foxy.engine.GameObject;
-import de.foxy.engine.Transform;
+import de.foxy.engine.utils.Transform;
 
 import java.lang.reflect.Type;
 

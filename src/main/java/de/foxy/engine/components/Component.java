@@ -1,4 +1,6 @@
-package de.foxy.engine;
+package de.foxy.engine.components;
+
+import de.foxy.engine.GameObject;
 
 public abstract class Component {
     public transient GameObject gameObject = null;

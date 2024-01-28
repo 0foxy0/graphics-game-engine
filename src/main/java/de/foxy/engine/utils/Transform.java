@@ -1,4 +1,4 @@
-package de.foxy.engine;
+package de.foxy.engine.utils;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -29,7 +29,7 @@ public class Transform {
 
     public Transform(Vector2f position, Vector2f scale) {
         this.position = new Vector3f(position, 0);
-        this.scale = new Vector3f(scale, 0);;
+        this.scale = new Vector3f(scale, 0);
     }
 
     public Transform(Vector3f position, Vector2f scale) {
@@ -38,7 +38,7 @@ public class Transform {
     }
 
     public Transform(Vector2f position, Vector3f scale) {
-        this.position = new Vector3f(position, 0);;
+        this.position = new Vector3f(position, 0);
         this.scale = scale;
     }
 

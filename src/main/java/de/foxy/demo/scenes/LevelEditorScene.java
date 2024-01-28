@@ -1,20 +1,26 @@
 package de.foxy.demo.scenes;
 
+import de.foxy.engine.GameObject;
+import de.foxy.engine.Prefab;
 import de.foxy.engine.Scene;
 import de.foxy.engine.Window;
 import de.foxy.engine.components.Sprite;
 import de.foxy.engine.components.SpriteSheet;
 import de.foxy.engine.listeners.KeyListener;
+import de.foxy.engine.listeners.MouseListener;
 import de.foxy.engine.renderer.Texture;
 import de.foxy.engine.utils.AssetCollector;
 import imgui.ImGui;
 import imgui.ImVec2;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class LevelEditorScene extends Scene {
     private final String elementsSpriteSheetTextureFilePath = "src/main/java/de/foxy/demo/assets/elements_spritesheet.png";
+    private GameObject holdingElement = null;
 
     @Override
     public void start() {
@@ -30,10 +36,24 @@ public class LevelEditorScene extends Scene {
         if (!isChangingScene && KeyListener.isKeyDown(GLFW_KEY_TAB)) {
             Window.changeScene(new LevelScene());
         }
+
+        if (holdingElement != null) {
+            holdingElement.transform.position.x = MouseListener.getOrthoX() - holdingElement.transform.scale.x / 2;
+            holdingElement.transform.position.y = MouseListener.getOrthoY() - holdingElement.transform.scale.y / 2;
+
+            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
+                holdingElement = null;
+            }
+        }
+
+        for (GameObject go : gameObjects) {
+            go.update(deltaTime);
+        }
+        renderer.render();
     }
 
     @Override
-    public void imGui() {
+    public void imGui(double deltaTime) {
         SpriteSheet elementsSpriteSheet = AssetCollector.getSpriteSheet(elementsSpriteSheetTextureFilePath);
 
         ImGui.begin("Elements");
@@ -51,8 +71,10 @@ public class LevelEditorScene extends Scene {
             Vector2f[] textureCoords = sprite.getTextureCoords();
 
             ImGui.pushID(i);
-            if (ImGui.imageButton(textureId, spriteWidth, spriteHeight, textureCoords[0].x, textureCoords[0].y, textureCoords[2].x, textureCoords[2].y)) {
-                System.out.println(i + " clicked");
+            if (ImGui.imageButton(textureId, spriteWidth, spriteHeight, textureCoords[2].x, textureCoords[0].y, textureCoords[0].x, textureCoords[2].y)) {
+                GameObject gameObject = Prefab.generateSpriteObject("Element: " + i, sprite, new Vector3f(MouseListener.getOrthoX(), MouseListener.getOrthoY(), 0), new Vector3f(spriteWidth, spriteHeight, 0));
+                holdingElement = gameObject;
+                addGameObjectToScene(gameObject);
             }
             ImGui.popID();
 
@@ -66,8 +88,13 @@ public class LevelEditorScene extends Scene {
         }
 
         ImGui.end();
+
+        ImGui.begin("FPS");
+        ImGui.text(String.valueOf((int) (1.0 / deltaTime)));
+        ImGui.end();
     }
 
     @Override
-    public void end() {}
+    public void end() {
+    }
 }

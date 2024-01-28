@@ -109,7 +109,7 @@ public class ImGuiLayer {
         startFrame(deltaTime);
 
         ImGui.newFrame();
-        Window.getCurrentScene().imGui();
+        Window.getCurrentScene().imGui(deltaTime);
         ImGui.render();
 
         endFrame();
