@@ -8,8 +8,10 @@ import de.foxy.engine.components.Sprite;
 import de.foxy.engine.components.SpriteSheet;
 import de.foxy.engine.listeners.KeyListener;
 import de.foxy.engine.listeners.MouseListener;
+import de.foxy.engine.renderer.DebugDraw;
 import de.foxy.engine.renderer.Texture;
 import de.foxy.engine.utils.AssetCollector;
+import de.foxy.engine.utils.Line2D;
 import imgui.ImGui;
 import imgui.ImVec2;
 import org.joml.Vector2f;
@@ -21,6 +23,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 public class LevelEditorScene extends Scene {
     private final String elementsSpriteSheetTextureFilePath = "src/main/java/de/foxy/demo/assets/elements_spritesheet.png";
     private GameObject holdingElement = null;
+    DebugDraw debugDraw = new DebugDraw();
 
     @Override
     public void start() {
@@ -33,6 +36,8 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void update(double deltaTime) {
+        debugDraw.draw();
+
         if (!isChangingScene && KeyListener.isKeyDown(GLFW_KEY_TAB)) {
             Window.changeScene(new LevelScene());
         }
@@ -42,6 +47,7 @@ public class LevelEditorScene extends Scene {
             holdingElement.transform.position.y = MouseListener.getOrthoY() - holdingElement.transform.scale.y / 2;
 
             if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
+                debugDraw.addLine2D(new Line2D(new Vector2f(0, 0), new Vector2f(holdingElement.transform.position.x, holdingElement.transform.position.y)));
                 holdingElement = null;
             }
         }
