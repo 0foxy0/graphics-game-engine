@@ -14,13 +14,14 @@ import org.joml.Vector3f;
 
 public class TestScene extends Scene {
     private GameObject mario;
-    private SpriteSheet marioSpriteSheet;
+    private final String marioSpriteSheetFilePath = "src/main/java/de/foxy/demo/assets/mario_spritesheet.png";
     private int[] spriteIndex = {0};
 
     @Override
     public void start() {
-        Texture spriteSheetTexture = AssetCollector.getTexture("src/main/java/de/foxy/demo/assets/mario_spritesheet.png", true);
-        marioSpriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
+        Texture spriteSheetTexture = AssetCollector.getTexture(marioSpriteSheetFilePath, true);
+        SpriteSheet marioSpriteSheet = new SpriteSheet(spriteSheetTexture, 16, 16, 14, 0);
+        AssetCollector.addSpriteSheet(marioSpriteSheet);
 
         mario = new GameObject("Mario", new Transform(new Vector3f(), new Vector2f(200, 200)));
         mario.addComponent(new SpriteRenderer(marioSpriteSheet.getSprite(spriteIndex[0])));
@@ -33,26 +34,31 @@ public class TestScene extends Scene {
 
     @Override
     public void update(double deltaTime) {
+        SpriteSheet marioSpriteSheet = AssetCollector.getSpriteSheet(marioSpriteSheetFilePath);
         mario.getComponent(SpriteRenderer.class).setSprite(marioSpriteSheet.getSprite(spriteIndex[0]));
 
         for (GameObject go : gameObjects) {
             go.update(deltaTime);
         }
-
         renderer.render();
     }
 
     @Override
     public void imGui() {
-        //ImGui.showDemoWindow();
+        SpriteSheet marioSpriteSheet = AssetCollector.getSpriteSheet(marioSpriteSheetFilePath);
+
         ImGui.begin("Sprite Picker");
 
         ImGui.pushItemWidth(ImGui.getFontSize() * 10);
         ImGui.sliderInt(" ", spriteIndex, 0, marioSpriteSheet.getNumOfSprites() - 1);
+        spriteIndex[0] = Math.abs(spriteIndex[0]) % marioSpriteSheet.getNumOfSprites();
 
         ImGui.end();
     }
 
     @Override
-    public void end() {}
+    public void end() {
+        AssetCollector.removeTexture(marioSpriteSheetFilePath);
+        AssetCollector.removeSpriteSheet(marioSpriteSheetFilePath);
+    }
 }
