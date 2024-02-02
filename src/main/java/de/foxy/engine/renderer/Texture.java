@@ -75,4 +75,12 @@ public class Texture {
     public int getId() {
         return textureId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Texture texture)) {
+            return false;
+        }
+        return texture.getWidth() == width && texture.getHeight() == height && texture.getId() == textureId && texture.getFilePath().equals(filePath);
+    }
 }

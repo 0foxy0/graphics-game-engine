@@ -30,27 +30,26 @@ public class Renderer {
     }
 
     private void addSpriteRenderer(SpriteRenderer spriteRenderer) {
-        boolean added = false;
         int spriteRendererZIndex = (int) spriteRenderer.gameObject.transform.position.z;
 
         for (RenderBatch batch : batches) {
-            if (batch.hasSpriteRenderersRoom() && batch.getZIndex() == spriteRendererZIndex) {
-                Texture texture = spriteRenderer.getTexture();
-                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
-                    batch.addSpriteRenderer(spriteRenderer);
-                    added = true;
-                    break;
-                }
+            if (!canAddSpriteRendererToBatch(batch, spriteRendererZIndex, spriteRenderer.getTexture())) {
+                continue;
             }
+            batch.addSpriteRenderer(spriteRenderer);
+            return;
         }
 
-        if (!added) {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, shader, spriteRendererZIndex);
-            newBatch.start();
-            batches.add(newBatch);
-            newBatch.addSpriteRenderer(spriteRenderer);
-            Collections.sort(batches);
-        }
+        RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, shader, spriteRendererZIndex);
+        newBatch.start();
+        batches.add(newBatch);
+        newBatch.addSpriteRenderer(spriteRenderer);
+        Collections.sort(batches);
+    }
+
+    private boolean canAddSpriteRendererToBatch(RenderBatch batch, int spriteRendererZIndex, Texture spriteTexture) {
+        return batch.hasSpriteRenderersRoom() && batch.getZIndex() == spriteRendererZIndex &&
+                (spriteTexture == null || batch.hasTexture(spriteTexture) || batch.hasTextureRoom());
     }
 
     public void render() {

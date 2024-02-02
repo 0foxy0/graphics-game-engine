@@ -27,6 +27,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
     // 6 indices per quad/rectangle; 3 indices per triangle
     private final int VERTICES_PER_QUAD = 4, INDICES_PER_QUAD = 6;
 
+    private final int TEXTURE_LIMIT = 8;
+
     private SpriteRenderer[] spriteRenderers;
     private int numOfSpriteRenderers = 0;
     private boolean renderersArrayHasRoom = true;
@@ -142,8 +144,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
         numOfSpriteRenderers++;
 
         if (texture != null) {
-            if (textures.size() >= 8) {
-                throw new IllegalStateException("Cannot have more than 8 Textures per RenderBatch");
+            if (!hasTextureRoom()) {
+                throw new IllegalStateException("Cannot have more than "+TEXTURE_LIMIT+" Textures per RenderBatch");
             }
 
             if (!textures.contains(texture)) {
@@ -167,7 +169,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         if (spriteRenderer.getTexture() != null) {
             for (int i = 0; i < textures.size(); i++) {
-                if (textures.get(i) == spriteRenderer.getTexture()) {
+                if (textures.get(i).equals(spriteRenderer.getTexture())) {
                     textureId = i + 1;
                     break;
                 }
@@ -242,7 +244,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
 
     public boolean hasTextureRoom() {
-        return textures.size() < 8;
+        return textures.size() < TEXTURE_LIMIT;
     }
 
     public boolean hasTexture(Texture texture) {

@@ -42,8 +42,6 @@ public class LevelEditorScene extends Scene {
         SpriteSheet elementsSpriteSheet = new SpriteSheet(elementsSpriteSheetTexture, 16, 16, 81, 0);
         AssetCollector.addSpriteSheet(elementsSpriteSheet);
 
-        // fixme: Render glitch when loading level
-       //? Too many Batches get created + some objects get drawn white
         try {
             String json = new String(Files.readAllBytes(Paths.get(saveFilePath)));
             GameObject[] deserializedGOs = getGson().fromJson(json, GameObject[].class);
