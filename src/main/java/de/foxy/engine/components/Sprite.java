@@ -28,6 +28,10 @@ public class Sprite {
         return texture;
     }
 
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
     public int getTextureId() {
         return texture == null ? -1 : texture.getId();
     }

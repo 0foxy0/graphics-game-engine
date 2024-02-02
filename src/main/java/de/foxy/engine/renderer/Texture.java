@@ -11,11 +11,13 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
     private final String filePath;
-    private int textureId;
-    private int width, height;
+    private transient final int textureId;
+    private final int width, height;
+    private boolean pixelate;
 
     public Texture(String filePath, boolean pixelate) {
         this.filePath = filePath;
+        this.pixelate = pixelate;
 
         textureId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureId);
@@ -51,6 +53,22 @@ public class Texture {
         glTexImage2D(GL_TEXTURE_2D, 0, rgbOrRgba, width.get(0), height.get(0), 0, rgbOrRgba, GL_UNSIGNED_BYTE, image);
         stbi_image_free(image);
     }
+    public Texture(int width, int height, boolean pixelate) {
+        this.width = width;
+        this.height = height;
+        this.pixelate = pixelate;
+        filePath = "GENERATED";
+        textureId = glGenTextures();
+
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        // blur or pixelate when getting larger
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, pixelate ? GL_NEAREST : GL_LINEAR);
+        // blur or pixelate when getting smaller
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, pixelate ? GL_NEAREST : GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    }
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, textureId);
@@ -76,11 +94,15 @@ public class Texture {
         return textureId;
     }
 
+    public boolean doesPixelate() {
+        return pixelate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Texture texture)) {
             return false;
         }
-        return texture.getWidth() == width && texture.getHeight() == height && texture.getId() == textureId && texture.getFilePath().equals(filePath);
+        return texture.getWidth() == width && texture.getHeight() == height && texture.getId() == textureId && texture.getFilePath().equals(filePath) && texture.doesPixelate() == pixelate;
     }
 }

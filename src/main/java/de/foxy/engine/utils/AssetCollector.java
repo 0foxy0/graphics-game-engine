@@ -39,7 +39,7 @@ public class AssetCollector {
         File file = new File(textureFilePath);
         String mapKey = file.getAbsolutePath() + pixelate;
 
-        if (shaders.containsKey(mapKey)) {
+        if (textures.containsKey(mapKey)) {
             return textures.get(mapKey);
         }
 
