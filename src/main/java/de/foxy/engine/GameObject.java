@@ -71,6 +71,10 @@ public class GameObject {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String toString() {
         return name + ": " + transform.position + " | " + transform.scale + "\n" + components;
     }
