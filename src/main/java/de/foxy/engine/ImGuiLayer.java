@@ -35,6 +35,7 @@ public class ImGuiLayer {
         io.setLogFilename(null);
 
         io.setConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors);
         io.setBackendPlatformName("imgui_java_impl_glfw");
 

@@ -14,6 +14,10 @@ import de.foxy.engine.utils.AssetCollector;
 import de.foxy.engine.utils.geometry.Line2D;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -81,41 +85,79 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void imGui(double deltaTime) {
-        SpriteSheet elementsSpriteSheet = AssetCollector.getSpriteSheet(elementsSpriteSheetTextureFilePath);
+        // Setup Dockingspace
+        {
+            int windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
 
-        ImGui.begin("Elements");
+            ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
+            ImGui.setNextWindowSize(Window.getWidth(), Window.getHeight());
 
-        ImVec2 windowPos = ImGui.getWindowPos();
-        ImVec2 windowSize = ImGui.getWindowSize();
-        ImVec2 itemSpacing = ImGui.getStyle().getItemSpacing();
-        float windowX2 = windowPos.x + windowSize.x;
+            ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0);
+            ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
 
-        for (int i = 0; i < elementsSpriteSheet.getNumOfSprites(); i++) {
-            Sprite sprite = elementsSpriteSheet.getSprite(i);
-            float spriteWidth = sprite.getWidth() * 2;
-            float spriteHeight = sprite.getHeight() * 2;
-            int textureId = sprite.getTextureId();
-            Vector2f[] textureCoords = sprite.getTextureCoords();
+            windowFlags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 
-            ImGui.pushID(i);
-            if (ImGui.imageButton(textureId, spriteWidth, spriteHeight, textureCoords[2].x, textureCoords[0].y, textureCoords[0].x, textureCoords[2].y)) {
-                GameObject gameObject = Prefab.createSpriteObject("HOLDING", sprite, new Vector3f(MouseListener.getOrthoX(), MouseListener.getOrthoY(), 0), new Vector3f(GRID_SIZE, GRID_SIZE, 0));
-                holdingElement = gameObject;
-                addGameObjectToScene(gameObject);
-            }
-            ImGui.popID();
+            ImGui.begin("Dockspace", new ImBoolean(true), windowFlags);
 
-            ImVec2 lastButtonPos = ImGui.getItemRectMax();
-            float lastButtonX2 = lastButtonPos.x;
-            float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
+            ImGui.popStyleVar(2);
+            ImGui.dockSpace(ImGui.getID("Dockspace"));
 
-            if (i + 1 < elementsSpriteSheet.getNumOfSprites() && nextButtonX2 < windowX2) {
-                ImGui.sameLine();
-            }
+            ImGui.end();
         }
 
-        ImGui.end();
+        // Setup Level View
+        {
+            ImGui.begin("Level", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
+            ImVec2 windowSize = getLargestSizeForViewport();
+            ImVec2 windowPos = getCenteredPositionForViewport(windowSize);
+            ImGui.setCursorPos(windowPos.x, windowPos.y);
+
+            int textureId = Window.getFramebuffer().getTextureId();
+            ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
+
+            ImGui.end();
+        }
+
+        // Setup Elements Window
+        SpriteSheet elementsSpriteSheet = AssetCollector.getSpriteSheet(elementsSpriteSheetTextureFilePath);
+
+        {
+            ImGui.begin("Elements");
+
+            ImVec2 windowPos = ImGui.getWindowPos();
+            ImVec2 windowSize = ImGui.getWindowSize();
+            ImVec2 itemSpacing = ImGui.getStyle().getItemSpacing();
+            float windowX2 = windowPos.x + windowSize.x;
+
+            for (int i = 0; i < elementsSpriteSheet.getNumOfSprites(); i++) {
+                Sprite sprite = elementsSpriteSheet.getSprite(i);
+                float spriteWidth = sprite.getWidth() * 2;
+                float spriteHeight = sprite.getHeight() * 2;
+                int textureId = sprite.getTextureId();
+                Vector2f[] textureCoords = sprite.getTextureCoords();
+
+                ImGui.pushID(i);
+                if (ImGui.imageButton(textureId, spriteWidth, spriteHeight, textureCoords[2].x, textureCoords[0].y, textureCoords[0].x, textureCoords[2].y)) {
+                    GameObject gameObject = Prefab.createSpriteObject("HOLDING", sprite, new Vector3f(MouseListener.getOrthoX(), MouseListener.getOrthoY(), 0), new Vector3f(GRID_SIZE, GRID_SIZE, 0));
+                    holdingElement = gameObject;
+                    addGameObjectToScene(gameObject);
+                }
+                ImGui.popID();
+
+                ImVec2 lastButtonPos = ImGui.getItemRectMax();
+                float lastButtonX2 = lastButtonPos.x;
+                float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
+
+                if (i + 1 < elementsSpriteSheet.getNumOfSprites() && nextButtonX2 < windowX2) {
+                    ImGui.sameLine();
+                }
+            }
+
+            ImGui.end();
+        }
+
+        // DEBUG FPS
         ImGui.begin("FPS");
         ImGui.text(String.valueOf((int) (1.0 / deltaTime)));
         ImGui.end();
@@ -156,5 +198,32 @@ public class LevelEditorScene extends Scene {
                 debugDraw.addLine2D(new Line2D(new Vector2f(firstX, y), new Vector2f(firstX + width, y), Integer.MAX_VALUE));
             }
         }
+    }
+
+    private ImVec2 getLargestSizeForViewport() {
+        ImVec2 windowSize = ImGui.getContentRegionAvail();
+        windowSize.x -= ImGui.getScrollX();
+        windowSize.y -= ImGui.getScrollY();
+
+        float aspectWidth = windowSize.x;
+        float aspectHeight = aspectWidth / Window.getTargetAspectRatio();
+
+        if (aspectHeight > windowSize.y) {
+            aspectHeight  = windowSize.y;
+            aspectWidth = aspectHeight * Window.getTargetAspectRatio();
+        }
+
+        return new ImVec2(aspectWidth, aspectHeight);
+    }
+
+    private ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize) {
+        ImVec2 windowSize = ImGui.getContentRegionAvail();
+        windowSize.x -= ImGui.getScrollX();
+        windowSize.y -= ImGui.getScrollY();
+
+        float viewportX = (windowSize.x / 2f) - (aspectSize.x / 2f);
+        float viewportY = (windowSize.y / 2f) - (aspectSize.y / 2f);
+
+        return new ImVec2(viewportX + ImGui.getCursorPosX(), viewportY + ImGui.getCursorPosY());
     }
 }

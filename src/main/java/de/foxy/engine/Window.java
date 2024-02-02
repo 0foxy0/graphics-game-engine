@@ -3,6 +3,7 @@ package de.foxy.engine;
 import de.foxy.engine.listeners.KeyListener;
 import de.foxy.engine.listeners.MouseListener;
 import de.foxy.engine.renderer.DebugDraw;
+import de.foxy.engine.renderer.FrameBuffer;
 import de.foxy.engine.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -19,6 +20,7 @@ public class Window {
     private static Scene currentScene;
 
     private ImGuiLayer imGuiLayer;
+    private FrameBuffer frameBuffer;
 
     private int width, height;
     private String title;
@@ -102,6 +104,9 @@ public class Window {
         imGuiLayer = new ImGuiLayer(glfwWindow);
         imGuiLayer.init();
 
+        frameBuffer = new FrameBuffer(width, height);
+        glViewport(0, 0, width, height);
+
         // Callbacks
         glfwSetWindowSizeCallback(glfwWindow, (w, newWidth, newHeight) -> {
             Window.setWidth(newWidth);
@@ -121,6 +126,9 @@ public class Window {
 
         while (!glfwWindowShouldClose(glfwWindow)) {
             glfwPollEvents();
+
+            frameBuffer.bind();
+
             glClearColor(1f, 1f, 1f, 1f);
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -129,6 +137,7 @@ public class Window {
                 DebugDraw.draw();
                 currentScene.update(deltaTime);
             }
+            frameBuffer.unbind();
 
             imGuiLayer.update(deltaTime);
             glfwSwapBuffers(glfwWindow);
@@ -163,5 +172,13 @@ public class Window {
 
     public static ImGuiLayer getImGuiLayer() {
         return get().imGuiLayer;
+    }
+
+    public static FrameBuffer getFramebuffer() {
+        return get().frameBuffer;
+    }
+
+    public static float getTargetAspectRatio() {
+        return 16f / 9f;
     }
 }
