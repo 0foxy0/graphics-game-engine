@@ -21,7 +21,7 @@ public class Renderer {
         this.shader = AssetCollector.getShader(ShaderPreset.DEFAULT.getAbsolutePath());
     }
 
-    public void addSpriteRenderer(GameObject gameObject) {
+    public void mayAddSpriteRenderer(GameObject gameObject) {
         SpriteRenderer spriteRenderer = gameObject.getComponent(SpriteRenderer.class);
 
         if (spriteRenderer != null) {
@@ -34,19 +34,14 @@ public class Renderer {
         int spriteRendererZIndex = (int) spriteRenderer.gameObject.transform.position.z;
 
         for (RenderBatch batch : batches) {
-            boolean cantAddSpriteRenderer =
-                    !batch.hasSpriteRenderersRoom() ||
-                    (spriteRenderer.getTexture() != null && !batch.hasTextureRoom() && !batch.hasTexture(spriteRenderer.getTexture())) ||
-                    batch.getZIndex() != spriteRendererZIndex;
-
-            if (cantAddSpriteRenderer) {
-                continue;
+            if (batch.hasSpriteRenderersRoom() && batch.getZIndex() == spriteRendererZIndex) {
+                Texture texture = spriteRenderer.getTexture();
+                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
+                    batch.addSpriteRenderer(spriteRenderer);
+                    added = true;
+                    break;
+                }
             }
-
-            batch.addSpriteRenderer(spriteRenderer);
-            Collections.sort(batches);
-            added = true;
-            break;
         }
 
         if (!added) {
@@ -54,6 +49,7 @@ public class Renderer {
             newBatch.start();
             batches.add(newBatch);
             newBatch.addSpriteRenderer(spriteRenderer);
+            Collections.sort(batches);
         }
     }
 

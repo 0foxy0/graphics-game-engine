@@ -29,7 +29,7 @@ public abstract class Scene {
 
         for (GameObject go : gameObjects) {
             go.start();
-            renderer.addSpriteRenderer(go);
+            renderer.mayAddSpriteRenderer(go);
         }
         isRunning = true;
     }
@@ -48,7 +48,7 @@ public abstract class Scene {
 
         gameObjects.add(gameObject);
         gameObject.start();
-        renderer.addSpriteRenderer(gameObject);
+        renderer.mayAddSpriteRenderer(gameObject);
     }
 
     public boolean getIsChangingScene() {

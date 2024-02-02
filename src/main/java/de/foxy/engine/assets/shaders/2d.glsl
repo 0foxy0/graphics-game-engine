@@ -38,7 +38,12 @@ out vec4 color;
 
 void main() {
     if (fTextureId > 0) {
-        color = fColor * texture(uTextures[int(fTextureId)], fTextureCoords);
+        int id = int(fTextureId);
+        if (id < 0 || id > uTextures.length() - 1) {
+            color = vec4(255, 20, 147, 1);
+            return;
+        }
+        color = fColor * texture(uTextures[id], fTextureCoords);
         return;
     }
     color = fColor;
