@@ -8,9 +8,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 
 public class LevelScene extends Scene {
     @Override
-    public void start() {
-        System.out.println("Now in LevelScene");
-    }
+    public void start() {}
 
     @Override
     public void update(double deltaTime) {

@@ -2,6 +2,7 @@ package de.foxy.engine;
 
 import de.foxy.engine.listeners.KeyListener;
 import de.foxy.engine.listeners.MouseListener;
+import de.foxy.engine.renderer.DebugDraw;
 import de.foxy.engine.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -125,6 +126,7 @@ public class Window {
 
             if (deltaTime >= 0.0) {
                 //System.out.println((1.0 / deltaTime) + " FPS");
+                DebugDraw.draw();
                 currentScene.update(deltaTime);
             }
 

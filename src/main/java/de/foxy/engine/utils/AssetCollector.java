@@ -8,9 +8,9 @@ import java.io.File;
 import java.util.HashMap;
 
 public class AssetCollector {
-    private static HashMap<String, Shader> shaders = new HashMap<>();
-    private static HashMap<String, Texture> textures = new HashMap<>();
-    private static HashMap<String, SpriteSheet> spriteSheets = new HashMap<>();
+    private static final HashMap<String, Shader> shaders = new HashMap<>();
+    private static final HashMap<String, Texture> textures = new HashMap<>();
+    private static final HashMap<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static Shader getShader(String shaderFilePath) {
         File file = new File(shaderFilePath);
