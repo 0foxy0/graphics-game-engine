@@ -26,6 +26,8 @@ public class KeyListener {
         ImGuiIO io = ImGui.getIO();
 
         glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
+            keyCallback(w, key, scancode, action, mods);
+
             if (action == GLFW_PRESS) {
                 io.setKeysDown(key, true);
             } else if (action == GLFW_RELEASE) {
@@ -36,10 +38,6 @@ public class KeyListener {
             io.setKeyShift(io.getKeysDown(GLFW_KEY_LEFT_SHIFT) || io.getKeysDown(GLFW_KEY_RIGHT_SHIFT));
             io.setKeyAlt(io.getKeysDown(GLFW_KEY_LEFT_ALT) || io.getKeysDown(GLFW_KEY_RIGHT_ALT));
             io.setKeySuper(io.getKeysDown(GLFW_KEY_LEFT_SUPER) || io.getKeysDown(GLFW_KEY_RIGHT_SUPER));
-
-            if (!io.getWantCaptureKeyboard()) {
-                keyCallback(w, key, scancode, action, mods);
-            }
         });
 
         glfwSetCharCallback(glfwWindow, (w, c) -> {

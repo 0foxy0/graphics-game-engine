@@ -36,6 +36,7 @@ public class LevelEditorScene extends Scene {
     private final String elementsSpriteSheetTextureFilePath = "src/main/java/de/foxy/demo/assets/elements_spritesheet.png";
     private final String saveFilePath = "level.json";
     private GameObject holdingElement = null;
+    private boolean cursorIsInViewport = false;
 
     @Override
     public void start() {
@@ -75,7 +76,7 @@ public class LevelEditorScene extends Scene {
                 holdingElement = null;
             }
 
-            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
+            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1) && cursorIsInViewport) {
                 holdingElement.setName("Element-" + UUID.randomUUID());
                 holdingElement = null;
             }
@@ -116,6 +117,20 @@ public class LevelEditorScene extends Scene {
             ImVec2 windowSize = getLargestSizeForViewport();
             ImVec2 windowPos = getCenteredPositionForViewport(windowSize);
             ImGui.setCursorPos(windowPos.x, windowPos.y);
+
+            ImVec2 topLeft = ImGui.getCursorScreenPos();
+            topLeft.x -= ImGui.getScrollX();
+            topLeft.y -= ImGui.getScrollY();
+
+            float leftX = topLeft.x;
+            float bottomY = topLeft.y;
+            float rightX = topLeft.x + windowSize.x;
+            float topY = topLeft.y + windowSize.y;
+
+            cursorIsInViewport = MouseListener.getX() >= leftX && MouseListener.getX() <= rightX && MouseListener.getY() >= bottomY && MouseListener.getY() <= topY;
+
+            MouseListener.setViewportPosition(new Vector2f(topLeft.x, topLeft.y));
+            MouseListener.setViewportSize(new Vector2f(windowSize.x, windowSize.y));
 
             int textureId = Window.getFramebuffer().getTextureId();
             ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
@@ -173,6 +188,7 @@ public class LevelEditorScene extends Scene {
             FileWriter writer = new FileWriter(saveFilePath);
             writer.write(getGson().toJson(gameObjects.stream().filter(go -> !Objects.equals(go.getName(), "HOLDING")).toArray()));
             writer.close();
+            MouseListener.resetViewportToWindow();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

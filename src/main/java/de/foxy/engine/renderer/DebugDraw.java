@@ -200,4 +200,8 @@ public class DebugDraw {
 
         addLine2D(new Line2D(points[points.length - 1], points[0], circle.getColor(), circle.getLifetime()));
     }
+
+    public static void setActiveInstance(DebugDraw instance) {
+        activeInstance = instance;
+    }
 }
