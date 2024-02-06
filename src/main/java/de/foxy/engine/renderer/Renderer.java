@@ -52,6 +52,30 @@ public class Renderer {
                 (spriteTexture == null || batch.hasTexture(spriteTexture) || batch.hasTextureRoom());
     }
 
+    public void mayRemoveSpriteRenderer(GameObject gameObject) {
+        SpriteRenderer spriteRenderer = gameObject.getComponent(SpriteRenderer.class);
+
+        if (spriteRenderer != null) {
+            removeSpriteRenderer(spriteRenderer);
+        }
+    }
+
+    private void removeSpriteRenderer(SpriteRenderer spriteRenderer) {
+        int spriteRendererZIndex = (int) spriteRenderer.gameObject.transform.position.z;
+
+        for (RenderBatch batch : batches) {
+            if (batch.getZIndex() != spriteRendererZIndex) {
+                continue;
+            }
+
+            batch.removeSpriteRenderer(spriteRenderer);
+            if (batch.getNumOfSpriteRenderers() < 1) {
+                batches.remove(batch);
+            }
+            return;
+        }
+    }
+
     public void render() {
         for (RenderBatch batch : batches) {
             batch.render();

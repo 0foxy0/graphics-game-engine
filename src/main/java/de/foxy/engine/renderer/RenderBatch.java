@@ -8,6 +8,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -160,6 +161,35 @@ public class RenderBatch implements Comparable<RenderBatch> {
         }
     }
 
+    public void removeSpriteRenderer(SpriteRenderer spriteRenderer) {
+        ArrayList<SpriteRenderer> list = new ArrayList<>(Arrays.asList(spriteRenderers));
+        list.remove(spriteRenderer);
+
+        spriteRenderers = list.toArray(new SpriteRenderer[maxBatchSize]);
+        numOfSpriteRenderers--;
+
+        Texture texture = spriteRenderer.getTexture();
+
+        if (texture != null) {
+            boolean isUsedMoreThanOnce = false;
+
+            for (SpriteRenderer sprRnd : spriteRenderers) {
+                if (sprRnd.getTexture().equals(texture)) {
+                    isUsedMoreThanOnce = true;
+                    break;
+                }
+            }
+
+            if (!isUsedMoreThanOnce) {
+                textures.remove(texture);
+            }
+        }
+
+        if (!renderersArrayHasRoom) {
+            renderersArrayHasRoom = true;
+        }
+    }
+
     private void loadVertexProperties(int index) {
         SpriteRenderer spriteRenderer = spriteRenderers[index];
         Vector4f color = spriteRenderer.getColor();
@@ -237,6 +267,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
         elements[offsetArrayIndex + 3] = offset;
         elements[offsetArrayIndex + 4] = offset + 2;
         elements[offsetArrayIndex + 5] = offset + 1;
+    }
+
+    public int getNumOfSpriteRenderers() {
+        return numOfSpriteRenderers;
     }
 
     public boolean hasSpriteRenderersRoom() {

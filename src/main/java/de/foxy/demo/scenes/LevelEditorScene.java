@@ -28,8 +28,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.UUID;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class LevelEditorScene extends Scene {
     private final int GRID_SIZE = 32;
@@ -70,6 +69,11 @@ public class LevelEditorScene extends Scene {
 
             holdingElement.transform.position.x = nextX;
             holdingElement.transform.position.y = nextY;
+
+            if (KeyListener.isKeyDown(GLFW_KEY_ESCAPE)) {
+                removeGameObjectFromScene(holdingElement);
+                holdingElement = null;
+            }
 
             if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
                 holdingElement.setName("Element-" + UUID.randomUUID());

@@ -51,6 +51,16 @@ public abstract class Scene {
         renderer.mayAddSpriteRenderer(gameObject);
     }
 
+    public void removeGameObjectFromScene(GameObject gameObject) {
+        if (!isRunning) {
+            gameObjects.remove(gameObject);
+            return;
+        }
+
+        gameObjects.remove(gameObject);
+        renderer.mayRemoveSpriteRenderer(gameObject);
+    }
+
     public boolean getIsChangingScene() {
         return isChangingScene;
     }
