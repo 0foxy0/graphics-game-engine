@@ -81,11 +81,6 @@ public class LevelEditorScene extends Scene {
                 holdingElement = null;
             }
         }
-
-        for (GameObject go : gameObjects) {
-            go.update(deltaTime);
-        }
-        renderer.render();
     }
 
     @Override

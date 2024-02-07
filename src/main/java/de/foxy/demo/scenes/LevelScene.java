@@ -33,11 +33,6 @@ public class LevelScene extends Scene {
         if (!isChangingScene && KeyListener.isKeyDown(GLFW_KEY_TAB)) {
             Window.changeScene(new LevelEditorScene());
         }
-
-        for (GameObject go : gameObjects) {
-            go.update(deltaTime);
-        }
-        renderer.render();
     }
 
     @Override

@@ -135,8 +135,15 @@ public class Window {
             if (deltaTime >= 0.0) {
                 //System.out.println((1.0 / deltaTime) + " FPS");
                 DebugDraw.draw();
+
                 currentScene.update(deltaTime);
+
+                for (GameObject go : currentScene.gameObjects) {
+                    go.update(deltaTime);
+                }
+                currentScene.renderer.render();
             }
+
             frameBuffer.unbind();
 
             imGuiLayer.update(deltaTime);
