@@ -107,6 +107,14 @@ public class MouseListener {
         return (float) get().posY;
     }
 
+    public static float getViewportX() {
+        return ((getX() - get().viewportPosition.x) / get().viewportSize.x) * Window.getWidth();
+    }
+
+    public static float getViewportY() {
+        return Window.getHeight() - (((getY() - get().viewportPosition.y) / get().viewportSize.y) * Window.getHeight());
+    }
+
     public static float getOrthoX() {
         float currentX = ((getX() - get().viewportPosition.x) / get().viewportSize.x) * 2f - 1f;
 

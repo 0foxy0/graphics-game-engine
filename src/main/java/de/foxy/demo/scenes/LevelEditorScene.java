@@ -64,6 +64,12 @@ public class LevelEditorScene extends Scene {
             Window.changeScene(new LevelScene());
         }
 
+        if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
+            int x = (int) MouseListener.getViewportX();
+            int y = (int) MouseListener.getViewportY();
+            holdingElement = getGameObjectByUId(Window.getPickingTexture().readPixel(x, y));
+        }
+
         if (holdingElement != null) {
             int nextX = (int) (MouseListener.getOrthoX() / GRID_SIZE) * GRID_SIZE;
             int nextY = (int) (MouseListener.getOrthoY() / GRID_SIZE) * GRID_SIZE;

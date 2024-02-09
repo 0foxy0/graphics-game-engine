@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
-    private int programId, vertexId, fragmentId;
+    private int programId = Integer.MIN_VALUE, vertexId = Integer.MIN_VALUE, fragmentId = Integer.MIN_VALUE;
     private String vertexSrc, fragmentSrc;
     private final String filePath;
     private boolean isBeingUsed = false;
@@ -114,6 +114,10 @@ public class Shader {
         }
         glUseProgram(0);
         isBeingUsed = false;
+    }
+
+    public boolean isCompiledAndLinked() {
+        return programId != Integer.MIN_VALUE && vertexId != Integer.MIN_VALUE && fragmentId != Integer.MIN_VALUE;
     }
 
     public void uploadMat4f(String variableName, Matrix4f mat4) {

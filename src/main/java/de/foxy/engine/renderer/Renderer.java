@@ -40,7 +40,7 @@ public class Renderer {
             return;
         }
 
-        RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, shader, spriteRendererZIndex);
+        RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, spriteRendererZIndex);
         newBatch.start();
         batches.add(newBatch);
         newBatch.addSpriteRenderer(spriteRenderer);
@@ -77,8 +77,25 @@ public class Renderer {
     }
 
     public void render() {
+        shader.use();
         for (RenderBatch batch : batches) {
             batch.render();
         }
+    }
+
+    public void destroy() {
+        batches.clear();
+        shader.detach();
+    }
+
+    public void setShader(Shader shader) {
+        this.shader = shader;
+        if (!shader.isCompiledAndLinked()) {
+            shader.compileAndLink();
+        }
+    }
+
+    public Shader getShader() {
+        return shader;
     }
 }

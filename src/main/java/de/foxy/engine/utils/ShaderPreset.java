@@ -3,8 +3,7 @@ package de.foxy.engine.utils;
 import java.io.File;
 
 public enum ShaderPreset {
-    TWOD("2d"),
-    THREED("3d"),
+    TWOD("default"),
     DEFAULT(TWOD);
 
     private final String fileName;

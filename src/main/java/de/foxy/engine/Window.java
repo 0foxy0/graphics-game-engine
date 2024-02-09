@@ -4,6 +4,10 @@ import de.foxy.engine.listeners.KeyListener;
 import de.foxy.engine.listeners.MouseListener;
 import de.foxy.engine.renderer.DebugDraw;
 import de.foxy.engine.renderer.FrameBuffer;
+import de.foxy.engine.renderer.PickingTexture;
+import de.foxy.engine.renderer.Shader;
+import de.foxy.engine.utils.AssetCollector;
+import de.foxy.engine.utils.ShaderPreset;
 import de.foxy.engine.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -21,6 +25,7 @@ public class Window {
 
     private ImGuiLayer imGuiLayer;
     private FrameBuffer frameBuffer;
+    private PickingTexture pickingTexture;
 
     private int width, height;
     private String title;
@@ -105,6 +110,7 @@ public class Window {
         imGuiLayer.init();
 
         frameBuffer = new FrameBuffer(width, height);
+        pickingTexture = new PickingTexture(width, height);
         glViewport(0, 0, width, height);
 
         // Callbacks
@@ -124,8 +130,21 @@ public class Window {
         double deltaTime = -1.0;
         double endTime;
 
+        Shader defaultShader = AssetCollector.getShader(ShaderPreset.DEFAULT.getAbsolutePath());
+        Shader pickingShader = AssetCollector.getShader("src/main/java/de/foxy/engine/assets/shaders/picking-texture.glsl");
+
         while (!glfwWindowShouldClose(glfwWindow)) {
             glfwPollEvents();
+
+            glDisable(GL_BLEND);
+            pickingTexture.enableWriting();
+            glViewport(0, 0, pickingTexture.getWidth(), pickingTexture.getHeight());
+            glClearColor(0, 0, 0, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            currentScene.getRenderer().setShader(pickingShader);
+            currentScene.render();
+            pickingTexture.disableWriting();
+            glEnable(GL_BLEND);
 
             frameBuffer.bind();
 
@@ -135,13 +154,14 @@ public class Window {
             if (deltaTime >= 0.0) {
                 //System.out.println((1.0 / deltaTime) + " FPS");
                 DebugDraw.draw();
+                currentScene.getRenderer().setShader(defaultShader);
 
                 currentScene.update(deltaTime);
 
                 for (GameObject go : currentScene.gameObjects) {
                     go.update(deltaTime);
                 }
-                currentScene.renderer.render();
+                currentScene.render();
             }
 
             frameBuffer.unbind();
@@ -183,6 +203,10 @@ public class Window {
 
     public static FrameBuffer getFramebuffer() {
         return get().frameBuffer;
+    }
+
+    public static PickingTexture getPickingTexture() {
+        return get().pickingTexture;
     }
 
     public static float getTargetAspectRatio() {

@@ -2,8 +2,6 @@ package de.foxy.engine.renderer;
 
 import de.foxy.engine.Window;
 import de.foxy.engine.components.SpriteRenderer;
-import de.foxy.engine.utils.AssetCollector;
-import de.foxy.engine.utils.ShaderPreset;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -17,14 +15,15 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class RenderBatch implements Comparable<RenderBatch> {
     // Sizes
-    private final int POSITION_SIZE = 2, COLOR_SIZE = 4, TEXTURE_COORDS_SIZE = 2, TEXTURE_ID_SIZE = 1;
-    private final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + TEXTURE_COORDS_SIZE + TEXTURE_ID_SIZE;
+    private final int POSITION_SIZE = 2, COLOR_SIZE = 4, TEXTURE_COORDS_SIZE = 2, TEXTURE_ID_SIZE = 1, ENTITY_ID_SIZE = 1;
+    private final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + TEXTURE_COORDS_SIZE + TEXTURE_ID_SIZE + ENTITY_ID_SIZE;
     private final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * Float.BYTES;
     // Offsets
     private final int POSITION_OFFSET = 0;
     private final int COLOR_OFFSET = POSITION_SIZE * Float.BYTES;
     private final int TEXTURE_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
     private final int TEXTURE_ID_OFFSET = TEXTURE_COORDS_OFFSET + TEXTURE_COORDS_SIZE * Float.BYTES;
+    private final int ENTITY_ID_OFFSET = TEXTURE_ID_OFFSET + TEXTURE_ID_SIZE * Float.BYTES;
     // 6 indices per quad/rectangle; 3 indices per triangle
     private final int VERTICES_PER_QUAD = 4, INDICES_PER_QUAD = 6;
 
@@ -38,7 +37,6 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private int vaoId, vboId;
     private int maxBatchSize;
     private int zIndex;
-    private Shader shader;
     private ArrayList<Texture> textures = new ArrayList<>();
     private int[] textureSlots = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
 
@@ -48,20 +46,6 @@ public class RenderBatch implements Comparable<RenderBatch> {
         this.spriteRenderers = new SpriteRenderer[maxBatchSize];
 
         this.vertices = new float[maxBatchSize * VERTICES_PER_QUAD * VERTEX_SIZE];
-
-        this.shader = AssetCollector.getShader(ShaderPreset.DEFAULT.getAbsolutePath());
-        this.shader.compileAndLink();
-    }
-
-    public RenderBatch(int maxBatchSize, Shader shader, int zIndex) {
-        this.maxBatchSize = maxBatchSize;
-        this.zIndex = zIndex;
-        this.spriteRenderers = new SpriteRenderer[maxBatchSize];
-
-        this.vertices = new float[maxBatchSize * VERTICES_PER_QUAD * VERTEX_SIZE];
-
-        this.shader = shader;
-        this.shader.compileAndLink();
     }
 
     public void start() {
@@ -88,6 +72,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         glVertexAttribPointer(3, TEXTURE_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_IN_BYTES, TEXTURE_ID_OFFSET);
         glEnableVertexAttribArray(3);
+
+        glVertexAttribPointer(4, ENTITY_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_IN_BYTES, ENTITY_ID_OFFSET);
+        glEnableVertexAttribArray(4);
     }
 
     public void render() {
@@ -109,7 +96,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
         }
 
-        shader.use();
+        Shader shader = Window.getCurrentScene().getRenderer().getShader();
 
         shader.uploadMat4f("uProjection", Window.getCurrentScene().getCamera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getCurrentScene().getCamera().getViewMatrix());
@@ -240,6 +227,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
             // Texture ID
             vertices[offset + 8] = textureId;
+
+            // Entity ID
+            vertices[offset + 9] = spriteRenderer.gameObject.getUid() + 1;
 
             offset += VERTEX_SIZE;
         }

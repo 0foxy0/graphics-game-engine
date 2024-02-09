@@ -9,8 +9,6 @@ import de.foxy.engine.utils.typeAdapter.GameObjectTypeAdapter;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
 
 public abstract class Scene {
     protected boolean isChangingScene = false;
@@ -61,6 +59,10 @@ public abstract class Scene {
         renderer.mayRemoveSpriteRenderer(gameObject);
     }
 
+    public void render() {
+        renderer.render();
+    }
+
     public boolean getIsChangingScene() {
         return isChangingScene;
     }
@@ -69,11 +71,19 @@ public abstract class Scene {
         return camera;
     }
 
-    public Optional<GameObject> getGameObjectByName(String name) {
-        return gameObjects.stream().filter(go -> Objects.equals(go.getName(), name)).findFirst();
+    public GameObject getGameObjectByName(String name) {
+        return gameObjects.stream().filter(go -> go.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public GameObject getGameObjectByUId(int uid) {
+        return gameObjects.stream().filter(go -> go.getUid() == uid).findFirst().orElse(null);
     }
 
     public Gson getGson() {
         return gson;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
     }
 }

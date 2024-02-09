@@ -6,18 +6,22 @@ import de.foxy.engine.utils.Transform;
 import java.util.ArrayList;
 
 public class GameObject {
+    private static int ID_COUNTER = 0;
     private String name;
     private final ArrayList<Component> components = new ArrayList<>();
     public Transform transform;
+    private transient int uid;
 
     public GameObject(String name) {
         this.name = name;
         this.transform = new Transform();
+        this.uid = ID_COUNTER++;
     }
 
     public GameObject(String name, Transform transform) {
         this.name = name;
         this.transform = transform;
+        this.uid = ID_COUNTER++;
     }
 
     public void start() {
@@ -65,6 +69,10 @@ public class GameObject {
     public void addComponent(Component component) {
         components.add(component);
         component.gameObject = this;
+    }
+
+    public int getUid() {
+        return this.uid;
     }
 
     public String getName() {
