@@ -71,6 +71,11 @@ public class GameObject {
         component.gameObject = this;
     }
 
+    public void destroy() {
+        Window.getCurrentScene().removeGameObjectFromScene(this);
+        components.clear();
+    }
+
     public int getUid() {
         return this.uid;
     }
@@ -85,5 +90,13 @@ public class GameObject {
 
     public String toString() {
         return name + ": " + transform.position + " | " + transform.scale + "\n" + components;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof GameObject go)) {
+            return false;
+        }
+        return go.getUid() == uid;
     }
 }

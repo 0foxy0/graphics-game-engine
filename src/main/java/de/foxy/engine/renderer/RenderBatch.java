@@ -161,6 +161,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
             boolean isUsedMoreThanOnce = false;
 
             for (SpriteRenderer sprRnd : spriteRenderers) {
+                if (sprRnd == null) {
+                    continue;
+                }
                 if (sprRnd.getTexture().equals(texture)) {
                     isUsedMoreThanOnce = true;
                     break;

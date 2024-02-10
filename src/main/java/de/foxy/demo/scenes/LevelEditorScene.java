@@ -31,12 +31,25 @@ import java.util.UUID;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class LevelEditorScene extends Scene {
+    // Properties
     private final int GRID_SIZE = 32;
     private final DebugDraw debugDraw = new DebugDraw(1500, 1.3f);
+    private boolean cursorIsInViewport = false;
+
+    // File paths
     private final String elementsSpriteSheetTextureFilePath = "src/main/java/de/foxy/demo/assets/elements_spritesheet.png";
     private final String saveFilePath = "level.json";
+
+    // Element Selection
     private GameObject holdingElement = null;
-    private boolean cursorIsInViewport = false;
+
+    // Camera Movement
+    private Vector3f clickOrigin;
+    private float dragDebounce = 0.032f;
+    private float lerpTime = 0;
+    private final float dragSensitivity = 30;
+    private final float scrollSensitivity = 0.1f;
+    private boolean moveCamBack = false;
 
     @Override
     public void start() {
@@ -58,19 +71,13 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void update(double deltaTime) {
-        drawGrid();
+        camera.adjustProjection();
 
         if (!isChangingScene && KeyListener.isKeyDown(GLFW_KEY_TAB)) {
             Window.changeScene(new LevelScene());
         }
 
-        if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
-            int x = (int) MouseListener.getViewportX();
-            int y = (int) MouseListener.getViewportY();
-            holdingElement = getGameObjectByUId(Window.getPickingTexture().readPixel(x, y));
-        }
-
-        if (holdingElement != null) {
+        if (holdingElement != null && cursorIsInViewport) {
             int nextX = (int) (MouseListener.getOrthoX() / GRID_SIZE) * GRID_SIZE;
             int nextY = (int) (MouseListener.getOrthoY() / GRID_SIZE) * GRID_SIZE;
 
@@ -78,15 +85,61 @@ public class LevelEditorScene extends Scene {
             holdingElement.transform.position.y = nextY;
 
             if (KeyListener.isKeyDown(GLFW_KEY_ESCAPE)) {
-                removeGameObjectFromScene(holdingElement);
+                holdingElement.destroy();
                 holdingElement = null;
             }
 
-            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_1) && cursorIsInViewport) {
+            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
                 holdingElement.setName("Element-" + UUID.randomUUID());
                 holdingElement = null;
             }
+        } else if (holdingElement == null && cursorIsInViewport) {
+            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
+                int x = (int) MouseListener.getViewportX();
+                int y = (int) MouseListener.getViewportY();
+                holdingElement = getGameObjectByUId(Window.getPickingTexture().readPixel(x, y));
+            }
         }
+
+        if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE) && dragDebounce > 0) {
+            clickOrigin = new Vector3f(MouseListener.getOrthoX(), MouseListener.getOrthoY(), 0);
+            dragDebounce -= (float) deltaTime;
+        } else if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            Vector3f mousePosition = new Vector3f(MouseListener.getOrthoX(), MouseListener.getOrthoY(), 0);
+            Vector3f delta = new Vector3f(mousePosition).sub(clickOrigin);
+
+            camera.position.sub(delta.mul((float) deltaTime).mul(dragSensitivity));
+            clickOrigin.lerp(mousePosition, (float) deltaTime);
+        }
+
+        if (dragDebounce <= 0 && !MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            dragDebounce = 0.1f;
+        }
+
+        if (MouseListener.getScrollY() != 0) {
+            float addValue = (float) Math.pow(Math.abs(MouseListener.getScrollY() * scrollSensitivity), 1 / camera.getZoom());
+            addValue *= -Math.signum(MouseListener.getScrollY());
+            camera.addZoom(addValue);
+        }
+
+        if (KeyListener.isKeyDown(GLFW_KEY_LEFT_ALT)) {
+            moveCamBack = true;
+        }
+        if (moveCamBack) {
+            Vector3f startPosition = new Vector3f(0, 0, camera.position.z);
+            camera.position.lerp(startPosition, lerpTime);
+            camera.setZoom(camera.getZoomLerp(1, lerpTime));
+            lerpTime += (float) (0.1f * deltaTime);
+
+            if (Math.abs(camera.position.x) <= 0.5f && Math.abs(camera.position.y) <= 5) {
+                camera.position.set(startPosition);
+                camera.resetZoom();
+                lerpTime = 0;
+                moveCamBack = false;
+            }
+        }
+
+        drawGrid();
     }
 
     @Override
@@ -140,9 +193,9 @@ public class LevelEditorScene extends Scene {
         }
 
         // Setup Elements Window
-        SpriteSheet elementsSpriteSheet = AssetCollector.getSpriteSheet(elementsSpriteSheetTextureFilePath);
-
         {
+            SpriteSheet elementsSpriteSheet = AssetCollector.getSpriteSheet(elementsSpriteSheetTextureFilePath);
+
             ImGui.begin("Elements");
 
             ImVec2 windowPos = ImGui.getWindowPos();
@@ -177,7 +230,7 @@ public class LevelEditorScene extends Scene {
             ImGui.end();
         }
 
-        // DEBUG FPS
+        // FPS Display
         ImGui.begin("FPS");
         ImGui.text(String.valueOf((int) (1.0 / deltaTime)));
         ImGui.end();
@@ -195,17 +248,18 @@ public class LevelEditorScene extends Scene {
         }
     }
 
+    //note: grid is getting off as you zoom out
     private void drawGrid() {
         Vector3f projectionSize = camera.getProjectionSize();
 
         int firstX = ((int) (camera.position.x / GRID_SIZE) - 1) * GRID_SIZE;
         int firstY = ((int) (camera.position.y / GRID_SIZE) - 1) * GRID_SIZE;
 
-        int numOfVerticalLines = (int) (projectionSize.x / GRID_SIZE) + 2;
-        int numOfHorizontalLines = (int) (projectionSize.y / GRID_SIZE) + 2;
+        int numOfVerticalLines = (int) (projectionSize.x * camera.getZoom() / GRID_SIZE) + 2;
+        int numOfHorizontalLines = (int) (projectionSize.y * camera.getZoom() / GRID_SIZE) + 2;
 
-        int width = (int) projectionSize.x + GRID_SIZE * 2;
-        int height = (int) projectionSize.y + GRID_SIZE * 2;
+        int width = (int) (projectionSize.x * camera.getZoom()) + GRID_SIZE * 2;
+        int height = (int) (projectionSize.y * camera.getZoom()) + GRID_SIZE * 2;
 
         int maxLines = Math.max(numOfVerticalLines, numOfHorizontalLines);
         for (int i = 0; i < maxLines; i++) {
@@ -213,10 +267,10 @@ public class LevelEditorScene extends Scene {
             int y = firstY + GRID_SIZE * i;
 
             if (i < numOfVerticalLines) {
-                debugDraw.addLine2D(new Line2D(new Vector2f(x, firstY), new Vector2f(x, y + height), Integer.MAX_VALUE));
+                debugDraw.addLine2D(new Line2D(new Vector2f(x, firstY), new Vector2f(x, firstY + height)));
             }
             if (i < numOfHorizontalLines) {
-                debugDraw.addLine2D(new Line2D(new Vector2f(firstX, y), new Vector2f(firstX + width, y), Integer.MAX_VALUE));
+                debugDraw.addLine2D(new Line2D(new Vector2f(firstX, y), new Vector2f(firstX + width, y)));
             }
         }
     }

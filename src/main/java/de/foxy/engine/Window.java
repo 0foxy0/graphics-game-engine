@@ -157,10 +157,8 @@ public class Window {
                 currentScene.getRenderer().setShader(defaultShader);
 
                 currentScene.update(deltaTime);
+                currentScene.updateGameObjects(deltaTime);
 
-                for (GameObject go : currentScene.gameObjects) {
-                    go.update(deltaTime);
-                }
                 currentScene.render();
             }
 
@@ -168,6 +166,8 @@ public class Window {
 
             imGuiLayer.update(deltaTime);
             glfwSwapBuffers(glfwWindow);
+
+            MouseListener.endFrame();
 
             endTime = Time.getTimeInSeconds();
             deltaTime = endTime - beginTime;

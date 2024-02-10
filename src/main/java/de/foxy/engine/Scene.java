@@ -49,14 +49,21 @@ public abstract class Scene {
         renderer.mayAddSpriteRenderer(gameObject);
     }
 
+    //fixme: correct game object gets removed but the rendering is false the deleted object gets shown and another object with the same sprite does not get rendered
     public void removeGameObjectFromScene(GameObject gameObject) {
         if (!isRunning) {
-            gameObjects.remove(gameObject);
+            gameObjects.removeIf(go -> go.equals(gameObject));
             return;
         }
 
-        gameObjects.remove(gameObject);
+        gameObjects.removeIf(go -> go.equals(gameObject));
         renderer.mayRemoveSpriteRenderer(gameObject);
+    }
+
+    public void updateGameObjects(double deltaTime) {
+        for (GameObject go : gameObjects) {
+            go.update(deltaTime);
+        }
     }
 
     public void render() {
